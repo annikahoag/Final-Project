@@ -29,7 +29,7 @@ class Main{
 
 			//create a new account
 			case 1:
-
+			System.out.println("This is for case 1")
 			//load existing
 			case 2:
 
