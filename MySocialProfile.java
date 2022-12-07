@@ -29,13 +29,15 @@ class Main{
 
 			//create a new account
 			case 1:
-			System.out.println("This is for case 1")
+
 			//load existing
 			case 2:
 
 			//exit
 			case 3:
 
+			case 4:
+				
 			default:
 			}
 
