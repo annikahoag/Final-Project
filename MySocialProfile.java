@@ -1,14 +1,28 @@
 import java.util.Scanner;
 
+/** 
+* Class that stores objects representing a user's profile, as on a social media site.
+* @author Annika Hoag, Matthew Volpi, and Michael Volpi
+* @since 12/7/2022
+*/
 public class MySocialProfile{
 	
 	//instance variables
 	String name, email, password;
 	int year;
 	//add events
-	String [] timelinePosts;
+
+	//Note: only required that we display last 3 posts so array will only store latest 3 posts at a time
+	//Maybe will try to implement it as a queue that dequeues each time it enqueues 
+	String [] timelinePosts = new String[3]; //array to store queue of timeline posts
+	int numTimeline	= 0; //count of number of timeline posts
+	int front = 0; //index of front of queue holding the timeline posts, oldest timeline post
+
+	SinglyLinkedList friends = new SinglyLinkedList();
 
 	//constructor 
+	public MySocialProfile(){ }
+
 	public MySocialProfile(String name, String email, String password, int year){
 		name = name;
 		email = email;
@@ -17,24 +31,114 @@ public class MySocialProfile{
 	}
 
 
+	/**
+	 * Prints the array storing the user's timeline posts
+	 * @author Annika Hoag
+	 * @since 12/8/2022
+	 */
+	public void printTimeline(){
+		System.out.println();
+
+		//only print posts if the array is not empty
+		if (numTimeline>0){
+
+			//loop through array
+			for (int i=0; i<timelinePosts.length; i++){
+
+				//print String at index i and a comma, unless it's the last index i=3,
+				//or if that value is null
+				if (timelinePosts[i] != null){
+					if (i!=3 && i!=1){
+						System.out.print(timelinePosts[i] + ", ");
+					}else{
+						System.out.print(timelinePosts[i]);
+					}
+				}
+
+			}//close for loop
+
+			System.out.println();
+
+		}else{
+			System.out.println("You have no timeline posts yet! Click 1 to post on your timeline!");
+		}
+
+		System.out.println();
+	}
+
+
+	/**
+	 * Adds a new post to the queue of posts, represented by an array
+	 * Chose to use a queue b/c we only need to display 3 posts at a time,
+	 * 	so we have no use for the oldest post once a new one is added.
+	 * Dequeues every time a new post is added (if array is not empty), and then enqueues new post
+	 * @param post -> the user input storing the new post
+	 * @author Annika Hoag
+	 * @since 12/8/2022
+	 */ 
+	public void postTimeline(String post){
+		
+		if (numTimeline == 3){ 	//only dequeue if not empty
+			this.dequeue();		//remove oldest timeline post
+		}
+		this.enqueue(post);		//add newest timeline post
+
+	}
+
+	
+	/** 
+	 * Helper method to remove the first element of the queue
+	 * Chose to not have this method return anything b/c we have no need to remember old timeline posts 
+	 * @author Annika Hoag
+	 * @since 12/8/2022
+	 */ 
+	private void dequeue() {
+		timelinePosts[front] = null;		
+		front = (front+1)%timelinePosts.length;
+		numTimeline--;
+	}
+
+	//enqueue
+	private void enqueue(String post) {
+		// if (numTimeline < timelinePosts.length) {		//Only add if the array is not full
+			int rearIndex = (front+numTimeline)%timelinePosts.length;	//Use modular arithmetic
+			timelinePosts[rearIndex] = post;
+			numTimeline++;
+		// }
+	}
+
+	//method to view list of friends
+
+	//method to add friend
+
+	//method to remove friend
+
+
+
 }//close MySocialProfile
+
 
 class Event{
 
+//Methods: display next event, display all events, add an event
+
 }//close Event
+
 
 class Main{
 	public static void main(String[]args){
 
-		//Main menu
+		MySocialProfile profile = new MySocialProfile();
+		Scanner scn = new Scanner(System.in);
+
 		boolean run=true;
 		boolean run2=true;
-		Scanner scn = new Scanner(System.in);
 		int choose, choose2;
 
-		String name, email, password;
+		String name, email, password, post;
 		int year;
 
+		//while loop to run Main Menu Screen
 		while(run){
 
 			//Note: make this look better later
@@ -66,7 +170,7 @@ class Main{
 				System.out.println("Please enter your class year: ");
 				year = scn.nextInt();
 
-				MySocialProfile profile = new MySocialProfile(name, email, password, year);
+				profile = new MySocialProfile(name, email, password, year);
 
 				run=false;
 				run2=true;
@@ -85,7 +189,7 @@ class Main{
 				password = scn.nextLine();
 
 				//Note for Everyone: read in info., take that user's info out of text file or report that there's no account with that
-				//Note for Annika: need a way to have MySocialProfile object connect to homescreen in some way
+				//Note for Annika: need a way to have MySocialProfile object connect to homescreen in some way, have to set "profile" to whatever you read in
 
 				run=false;
 				run2=true;
@@ -117,7 +221,8 @@ class Main{
 		while (run2){
 
 			System.out.println("\n*next event to take place*");
-			System.out.println("*3 most recent timeline posts*");
+			//Left off: all printing null b/c no events
+			profile.printTimeline();
 			System.out.println("*list of all events*");
 
 			scn = new Scanner(System.in);
@@ -133,6 +238,11 @@ class Main{
 
 			//post to timeline
 			case 1:
+				scn = new Scanner(System.in);
+				System.out.println("Please type your new timeline post: ");
+				post = scn.nextLine();
+				profile.postTimeline(post);
+
 				break;
 
 			//add an event
@@ -149,6 +259,7 @@ class Main{
 
 			//logout
 			case 5:
+				run2=false;
 				break;
 
 			default:
