@@ -7,16 +7,14 @@ import java.util.Scanner;
 */
 public class MySocialProfile{
 	
-	//instance variables
+	//instance variables for MySocialProfile object
 	String name, email, password;
 	int year;
 	//add events
 
-	//Note: only required that we display last 3 posts so array will only store latest 3 posts at a time
-	//Maybe will try to implement it as a queue that dequeues each time it enqueues 
 	String [] timelinePosts = new String[3]; //array to store queue of timeline posts
-	int numTimeline	= 0; //count of number of timeline posts
-	int front = 0; //index of front of queue holding the timeline posts, oldest timeline post
+	int numTimeline	= 0; 	//count of number of timeline posts
+	int front = 0; 			//index of front of queue holding the timeline posts, oldest timeline post
 
 	SinglyLinkedList friends = new SinglyLinkedList();
 
@@ -42,23 +40,33 @@ public class MySocialProfile{
 		//only print posts if the array is not empty
 		if (numTimeline>0){
 
-			//loop through array
-			for (int i=0; i<timelinePosts.length; i++){
+			/**
+			 * arrIndex is the index that goes through the array
+			 * printCount is the number of posts that have already been printed
+			 * this allows us to loop through the array starting at the front of the queue,
+			 * 	and ending at the rear while also making sure not to print any null values.
+			 */ 
+			int arrIndex = front;		
+			int printCount=0;	
 
-				//print String at index i and a comma, unless it's the last index i=3,
-				//or if that value is null
-				if (timelinePosts[i] != null){
-					if (i!=3 && i!=1){
-						System.out.print(timelinePosts[i] + ", ");
-					}else{
-						System.out.print(timelinePosts[i]);
-					}
-				}
+			//loop as long as the number of posts that have been printed are less than total number of posts
+			while(printCount < numTimeline){
 
-			}//close for loop
+				//print value at arrIndex and a comma
+				System.out.print(timelinePosts[arrIndex] + ", ");
+				
+				//modular arithmetic to have arrIndex wrap back to beginning of array if necessary
+				arrIndex = (arrIndex+1) % timelinePosts.length;
+
+				//increase number of posts already printed
+				printCount++;
+
+			}//close while loop
 
 			System.out.println();
 
+
+		//if array is empty print message to inform the user
 		}else{
 			System.out.println("You have no timeline posts yet! Click 1 to post on your timeline!");
 		}
@@ -78,10 +86,10 @@ public class MySocialProfile{
 	 */ 
 	public void postTimeline(String post){
 		
-		if (numTimeline == 3){ 	//only dequeue if not empty
+		if (numTimeline == 3){ 	//only dequeue if queue is full
 			this.dequeue();		//remove oldest timeline post
 		}
-		this.enqueue(post);		//add newest timeline post
+		this.enqueue(post);		//add newest timeline post each time
 
 	}
 
@@ -89,22 +97,28 @@ public class MySocialProfile{
 	/** 
 	 * Helper method to remove the first element of the queue
 	 * Chose to not have this method return anything b/c we have no need to remember old timeline posts 
+	 * Modified from dequeue method we received from Prof. Tarimo
 	 * @author Annika Hoag
 	 * @since 12/8/2022
 	 */ 
 	private void dequeue() {
-		timelinePosts[front] = null;		
-		front = (front+1)%timelinePosts.length;
-		numTimeline--;
+		timelinePosts[front] = null;				//old front now stores null	
+		front = (front+1)%timelinePosts.length;		//the new front is the next index in the array, or wraps to front
+		numTimeline--;								//decrease number of posts
 	}
 
-	//enqueue
+
+	/** 
+	 * Helper method to add an element to the queue 
+	 * Modified from enqueue method we received from Prof. Tarimo
+	 * @param post -> the user input storing the new post
+	 * @author Annika Hoag
+	 * @since 12/8/2022
+	 */ 
 	private void enqueue(String post) {
-		// if (numTimeline < timelinePosts.length) {		//Only add if the array is not full
-			int rearIndex = (front+numTimeline)%timelinePosts.length;	//Use modular arithmetic
-			timelinePosts[rearIndex] = post;
-			numTimeline++;
-		// }
+		int rearIndex = (front+numTimeline)%timelinePosts.length;	//Use modular arithmetic
+		timelinePosts[rearIndex] = post;		//store new post at rearIndex
+		numTimeline++;        					//increase number of posts
 	}
 
 	//method to view list of friends
