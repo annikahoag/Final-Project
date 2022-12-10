@@ -142,8 +142,32 @@ class Event{
 
 class Main{
     public static void main(String[] args) {
-        mainMenu();
-    }
+        MySocialProfile profile;
+        int choice;
+        boolean run1=true;
+        boolean run2=true;
+
+        while(run1){
+	        //Main Menu 
+	        choice = this.mainMenu();
+
+	        //value if program goes outside switch statement or user wishes to exit program
+	        if (choice==-1 || choice==3){
+	        	System.out.println("Program is ending.");
+	        	run1=false;
+	        
+	        //user either created a new profile or loaded an existing one
+	        }else{
+
+	        	while(run2){
+	        		run2 = this.homeScreen();
+	        	}
+
+	        }
+	        run1=true;
+	    }//closes outside while
+    
+    }//closes public static void
 
 	/**
 	 * Creates a Main Menu where the user can: 
@@ -152,12 +176,12 @@ class Main{
 	 * 3. Exist the program 
 	 * 
 	 * These will all be options the user can choose from. 
-	 * 
-	 * @author Michael Volpi 
+	 * @return option -> option that the user chose, does this so that the program knows how to proceed
+	 * 	1 for create new account, 2 for loading an existing profile, 3 for exiting, -1 if it gets to outside the switch statement
+	 * @author Michael Volpi, Matthew Volpi, and Annika Hoag
 	 * @since 12/9/2022
 	 */
-
-    public static void mainMenu() {
+    public static int mainMenu() {
         // Prompt the user to select an option from the main menu
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to the Main Menu: ");
@@ -171,29 +195,34 @@ class Main{
             case 1:
                 // If the user selects option 1, create a new account/profile
                 createAccount();
+                return 1;
                 break;
             case 2:
                 // If the user selects option 2, load an existing profile (if one exists in the file)
                 loadProfile();
+                return 2;
                 break;
             case 3:
                 // If the user selects option 3, exit the program
                 System.out.println("Goodbye!");
-                System.exit(0);
+                // System.exit(0);
+                return 3;
                 break;
             default:
                 // If the user enters an invalid option, print an error message and return to the main menu
                 System.out.println("Invalid option. Please try again.");
                 mainMenu();
         }
+        return -1;
     }
+
+    //Note: have to add HomeScreen similar to Main Menu
 
 	/**
 	 * Creates a method where the user can create their own account with specified details
 	 * @author Michael Volpi 
 	 * @since 12/10/2022
 	 */
-
     public static void createAccount() {
         // Prompt the user for their account details and create a new MySocialProfile for them
         Scanner scanner = new Scanner(System.in);
@@ -205,7 +234,7 @@ class Main{
         String email = scanner.nextLine();
         System.out.println("Enter your class year: ");
         String classYear = scanner.nextLine();
-        MySocialProfile profile = new MySocialProfile(username, password, email, classYear);
+        profile = new MySocialProfile(username, password, email, classYear);
 
         // Write the user's profile to the mysocialprofile.txt file
         try {
@@ -215,46 +244,102 @@ class Main{
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+
+    }//close createAccount
 
     /**
 	 * Creates a method where you can sign into your account with data saved in the mysocialprofile.txt file
 	 * @author Michael Volpi 
 	 * @since 12/9/2022
 	 */
-
     public static void loadProfile() {
-    // Prompt the user for their username and password and check if they have an existing profile in the mysocialprofile.txt file
-    Scanner scanner = new Scanner(System.in);
-    System.out.println("Enter your username: ");
-    String username = scanner.nextLine();
-    System.out.println("Enter your password: ");
-    String password = scanner.nextLine();
+	    // Prompt the user for their username and password and check if they have an existing profile in the mysocialprofile.txt file
+	    Scanner scanner = new Scanner(System.in);
+	    System.out.println("Enter your username: ");
+	    String username = scanner.nextLine();
+	    System.out.println("Enter your password: ");
+	    String password = scanner.nextLine();
 
-    try {
-        // Read the mysocialprofile.txt file line by line
-        Scanner fileScanner = new Scanner(new File("mysocialprofile.txt"));
-        while (fileScanner.hasNextLine()) {
-            String line = fileScanner.nextLine();
-            // Split the line into fields separated by commas
-            String[] fields = line.split(",");
-            if (fields[0].equals(username) && fields[1].equals(password)) {
-                // If the username and password match an existing profile, load the user's profile and display the details to the user
-                MySocialProfile profile = new MySocialProfile(fields[0], fields[1], fields[2], fields[3]);
-                System.out.println("Welcome, " + profile.name() + "!");
-                System.out.println("Your profile details: ");
-                System.out.println("Username: " + profile.username());
-                System.out.println("Password: " + profile.password());
-                System.out.println("Email: " + profile.email());
-                System.out.println("Class year: " + profile.classyear());
-                return;
-            }
-        }
-        // If the username and password do not match an existing profile, print an error message and return to the main menu
-        System.out.println("Username and password do not match an existing profile. Please try again.");
-        mainMenu();
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
+	    try {
+	        // Read the mysocialprofile.txt file line by line
+	        Scanner fileScanner = new Scanner(new File("mysocialprofile.txt"));
+	        while (fileScanner.hasNextLine()) {
+	            String line = fileScanner.nextLine();
+	            // Split the line into fields separated by commas
+	            String[] fields = line.split(",");
+	            if (fields[0].equals(username) && fields[1].equals(password)) {
+	                // If the username and password match an existing profile, load the user's profile and display the details to the user
+	                profile = new MySocialProfile(fields[0], fields[1], fields[2], fields[3]);
+	                System.out.println("Welcome, " + profile.name() + "!");
+	                System.out.println("Your profile details: ");
+	                System.out.println("Username: " + profile.username());
+	                System.out.println("Password: " + profile.password());
+	                System.out.println("Email: " + profile.email());
+	                System.out.println("Class year: " + profile.classyear());
+	                return;
+	            }
+	        }
+	        // If the username and password do not match an existing profile, print an error message and return to the main menu
+	        System.out.println("Username and password do not match an existing profile. Please try again.");
+	        mainMenu();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	
+	}//close loadProfile
 
-}//close Main
+
+	public boolean homeScreen(){
+		System.out.println("\n*next event to take place*");
+		profile.printTimeline();
+		System.out.println("*list of all events*");
+
+		scn = new Scanner(System.in);
+		System.out.println("\nPlease choose an option.");
+		System.out.println("1. Post to timeline " +
+			"\n2. Add an event." +
+			"\n3. View your list of friends " +
+			"\n4. Add/remove a friend. " +
+			"\n5. Logout. ");
+		int choose = scn.nextInt();
+
+		switch(choose){
+
+			//post to timeline
+			case 1:
+				scn = new Scanner(System.in);
+				System.out.println("Please type your new timeline post: ");
+				String post = scn.nextLine();
+				profile.postTimeline(post);
+				return true;
+				break;
+
+			//add an event
+			case 2:
+				return true;
+				break;
+
+			//view list of friends	
+			case 3:
+				return true;
+				break;
+
+			//add/remove friend
+			case 4:
+				return true;
+				break;
+
+			//logout
+			case 5:
+				return false;
+				break;
+
+			default:
+				return true;
+				break;
+
+			}//closes switch
+
+	}//closes homeScreen
+
+// }//close Main
