@@ -1,5 +1,4 @@
 import java.util.Scanner;
-
 /** 
 * Class that stores objects representing a user's profile, as on a social media site.
 * @author Annika Hoag, Matthew Volpi, and Michael Volpi
@@ -21,10 +20,9 @@ public class MySocialProfile{
 	//constructor 
 	public MySocialProfile(){ }
 
-	public MySocialProfile(String name, String email, String username, String password, int year){
+	public MySocialProfile(String name, String password, String email, int year){
 		name = name;
 		email = email;
-		username = usermame; 
 		password = password;
 		year = year;
 	}
@@ -167,7 +165,7 @@ class Main{
 	        run1=true;
 	    }//closes outside while
     
-    }//closes public static void
+    // }//closes public static void
 
 	/**
 	 * Creates a Main Menu where the user can: 
@@ -181,7 +179,7 @@ class Main{
 	 * @author Michael Volpi, Matthew Volpi, and Annika Hoag
 	 * @since 12/9/2022
 	 */
-    public static int mainMenu() {
+    public int mainMenu() {
         // Prompt the user to select an option from the main menu
         Scanner scanner = new Scanner(System.in);
         System.out.println("Welcome to the Main Menu: ");
@@ -214,7 +212,7 @@ class Main{
                 mainMenu();
         }
         return -1;
-    }
+    }//closes main menu
 
     //Note: have to add HomeScreen similar to Main Menu
 
@@ -223,7 +221,7 @@ class Main{
 	 * @author Michael Volpi 
 	 * @since 12/10/2022
 	 */
-    public static void createAccount() {
+    public void createAccount() {
         // Prompt the user for their account details and create a new MySocialProfile for them
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter your username: ");
@@ -252,7 +250,7 @@ class Main{
 	 * @author Michael Volpi 
 	 * @since 12/9/2022
 	 */
-    public static void loadProfile() {
+    public void loadProfile() {
 	    // Prompt the user for their username and password and check if they have an existing profile in the mysocialprofile.txt file
 	    Scanner scanner = new Scanner(System.in);
 	    System.out.println("Enter your username: ");
@@ -269,10 +267,10 @@ class Main{
 	            String[] fields = line.split(",");
 	            if (fields[0].equals(username) && fields[1].equals(password)) {
 	                // If the username and password match an existing profile, load the user's profile and display the details to the user
-	                profile = new MySocialProfile(fields[0], fields[1], fields[2], fields[3]);
+	                profile = new MySocialProfile(fields[0], fields[1], fields[2]);
 	                System.out.println("Welcome, " + profile.name() + "!");
 	                System.out.println("Your profile details: ");
-	                System.out.println("Username: " + profile.username());
+	                // System.out.println("Username: " + profile.username());
 	                System.out.println("Password: " + profile.password());
 	                System.out.println("Email: " + profile.email());
 	                System.out.println("Class year: " + profile.classyear());
@@ -342,4 +340,7 @@ class Main{
 
 	}//closes homeScreen
 
-// }//close Main
+
+
+	}//closes public static void
+}//close Main
