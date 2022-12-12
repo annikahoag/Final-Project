@@ -1,4 +1,8 @@
 import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Event {
     // Instance variables for the event details, the user's friends list, and the user's timeline of posts
@@ -40,39 +44,11 @@ public class Event {
         this.date = date;
     }
 
-    public List<String> getFriends() {
-        return friends;
-    }
-
-    public void setFriends(List<String> friends) {
-        this.friends = friends;
-    }
-
-    public List<String> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<String> posts) {
-        this.posts = posts;
-    }
-
-    // Method to add a friend to the user's friends list for the event
-    public void addFriend(String friend) {
-        friends.add(friend);
-    }
-
-    // Method to remove a friend from the user's friends list for the event
-    public void removeFriend(String friend) {
-        friends.remove(friend);
-    }
-
-    // Method to add a post to the user's timeline for the event
-    public void addPost(String post) {
-        posts.add(post);
-    }
-
+    
     // Method to log out of the event
-    public void logOut() {
+    public void exitEvent() {
         System.out.println("You have been logged out of the event.");
     }
+
+
 }
