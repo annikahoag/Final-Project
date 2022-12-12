@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.io.*;  
 /** 
 * Class that stores objects representing a user's profile, as on a social media site.
 * @author Annika Hoag, Matthew Volpi, and Michael Volpi
@@ -126,7 +127,29 @@ public class MySocialProfile{
 
 	//method to remove friend
 
+	public void setName(String n){
+		name = n;
+	}
 
+	public void setPassword(String p){
+		password = p;
+	}
+
+	public void setEmail(String e){
+		email = e;
+	}
+
+	public void setYear(int y){
+		year = y;
+	}
+
+	public void setTimelinePosts(String s1, String s2, String s3){
+
+		this.postTimeline(s1);
+		this.postTimeline(s2);
+		this.postTimeline(s3);
+
+	}
 
 }//close MySocialProfile
 
@@ -139,9 +162,11 @@ class Event{
 
 
 class Main{
-    public static void main(String[] args) {
-        MySocialProfile profile;
-        int choice;
+	MySocialProfile profile;
+	//Note: I think you need to put static back
+    public void main(String[] args) {
+        // MySocialProfile profile;
+       	int choice;
         boolean run1=true;
         boolean run2=true;
 
@@ -165,7 +190,7 @@ class Main{
 	        run1=true;
 	    }//closes outside while
     
-    // }//closes public static void
+    }//closes public static void
 
 	/**
 	 * Creates a Main Menu where the user can: 
@@ -224,15 +249,15 @@ class Main{
     public void createAccount() {
         // Prompt the user for their account details and create a new MySocialProfile for them
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your username: ");
-        String username = scanner.nextLine();
+        System.out.println("Enter your full name: ");
+        String userName = scanner.nextLine();
         System.out.println("Enter your password: ");
         String password = scanner.nextLine();
         System.out.println("Enter your email: ");
         String email = scanner.nextLine();
         System.out.println("Enter your class year: ");
-        String classYear = scanner.nextLine();
-        profile = new MySocialProfile(username, password, email, classYear);
+        int classYear = scanner.nextInt();
+        profile = new MySocialProfile(userName, password, email, classYear);
 
         // Write the user's profile to the mysocialprofile.txt file
         try {
@@ -253,8 +278,8 @@ class Main{
     public void loadProfile() {
 	    // Prompt the user for their username and password and check if they have an existing profile in the mysocialprofile.txt file
 	    Scanner scanner = new Scanner(System.in);
-	    System.out.println("Enter your username: ");
-	    String username = scanner.nextLine();
+	    System.out.println("Enter your email ID: ");
+	    String email = scanner.nextLine();
 	    System.out.println("Enter your password: ");
 	    String password = scanner.nextLine();
 
@@ -264,10 +289,32 @@ class Main{
 	        while (fileScanner.hasNextLine()) {
 	            String line = fileScanner.nextLine();
 	            // Split the line into fields separated by commas
-	            String[] fields = line.split(",");
-	            if (fields[0].equals(username) && fields[1].equals(password)) {
+	            String[] fields = line.split(";");
+
+	            /**
+	             * Note sure if this is right, but I needed to make this work with my code so I just did stuff that worked:
+	             * I also made a ; the separator idk how that works tho
+	             * Field 0 = name
+	             * Field 1 = email
+	             * Field 2 = password
+	             * Field 3 = class year
+	             * Field 4 = events
+	             * Field 5 = timeline posts
+	             * Field 6 = friends list
+	             */ 
+
+	            if (fields[1].equals(email) && fields[2].equals(password)) {
 	                // If the username and password match an existing profile, load the user's profile and display the details to the user
-	                profile = new MySocialProfile(fields[0], fields[1], fields[2]);
+
+	                // profile = new MySocialProfile(fields[0], fields[1], fields[2]);
+	            	
+	            	//temporary way to store existing profile info in the object we're currently using
+	            	profile.setName(field[0]);
+	            	profile.setEmail(field[1]);
+	            	profile.setPassword(field[2]);
+	            	profile.setYear((int)field[3]);
+
+
 	                System.out.println("Welcome, " + profile.name() + "!");
 	                System.out.println("Your profile details: ");
 	                // System.out.println("Username: " + profile.username());
@@ -292,7 +339,7 @@ class Main{
 		profile.printTimeline();
 		System.out.println("*list of all events*");
 
-		scn = new Scanner(System.in);
+		Scanner scn = new Scanner(System.in);
 		System.out.println("\nPlease choose an option.");
 		System.out.println("1. Post to timeline " +
 			"\n2. Add an event." +
@@ -342,5 +389,5 @@ class Main{
 
 
 
-	}//closes public static void
+	// }//closes public static void
 }//close Main
