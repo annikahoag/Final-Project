@@ -3,6 +3,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*; 
 import static java.nio.file.StandardOpenOption.*; 
+
 /** 
 * Class that stores objects representing a user's profile, as on a social media site.
 * @author Annika Hoag, Matthew Volpi, and Michael Volpi
@@ -24,7 +25,16 @@ public class MySocialProfile{
 	//constructor 
 	public MySocialProfile(){ }
 
-	public MySocialProfile(String name, String password, String email, int year){
+	/**
+	 * Constructs a new MySocialProfile object with given name, email, password, and class year
+	 * @param name -> full name of user
+	 * @param email -> user's email/ID
+	 * @param password -> user's password
+	 * @param year -> user's class year
+	 * @author Annika Hoag
+	 * @since 12/7/2022
+	 */ 
+	public MySocialProfile(String name, String email, String password, int year){
 		name = name;
 		email = email;
 		password = password;
@@ -124,35 +134,88 @@ public class MySocialProfile{
 		numTimeline++;        					//increase number of posts
 	}
 
-	//method to view list of friends
 
-	//method to add friend
+	/**
+	 * Displays the user's list of friends
+	 * @author Annika Hoag using a method from the SinglyLinkedList class provided by Prof. Tarimo
+	 * @since 12/13/2022
+	 */  
+	public void displayFriends (){
+		friends.display();
+	} 
+
+	/**
+	 * Adds a friend's email to the SinglyLinkedList titled friends
+	 * Uses addFirst and addLast method from the SinglyLinkedList class provided by Prof. Tarimo
+	 * @param friendEmail -> email ID of the friend to be added the list
+	 * @author Annika Hoag using methods by Prof. Tarimo
+	 * @since 12/13/2022
+	 */ 
+	public void addFriend(String friendEmail){
+
+		if (friends.isEmpty()){
+			friends.addFirst(friendEmail);
+		}else{
+			friends.addLast(friendEmail);
+		}
+	}
 
 	//method to remove friend
+	public void removeFriend(String friendEmail){
 
-	public void setName(String n){
-		name = n;
-	}
+		boolean found = this.find(friendEmail);
 
-	public void setPassword(String p){
-		password = p;
-	}
+		if (!found){
+			System.out.println("Friend could not be found in the list.");
+		}else{
 
-	public void setEmail(String e){
-		email = e;
-	}
-
-	public void setYear(int y){
-		year = y;
-	}
-
-	public void setTimelinePosts(String s1, String s2, String s3){
-
-		this.postTimeline(s1);
-		this.postTimeline(s2);
-		this.postTimeline(s3);
+		}
 
 	}
+
+	//helper method to remove friend
+	private boolean find(String friendEmail){
+
+		//may need to do !.equals instead of !=
+		while (friends.getNext() != null){
+
+			if (friends.getElement().equals(friendEmail)){
+				//figure out how to remove intermediate value
+				return true;
+			}else{
+				continue;
+			}
+
+		}//closes while loop
+
+		return false;
+	}//closes fined
+
+
+//NOT SURE IF I WILL NEED THESE SO THEYRE JUST COMMENTED OUT FOR NOW
+	// public void setName(String n){
+	// 	name = n;
+	// }
+
+	// public void setPassword(String p){
+	// 	password = p;
+	// }
+
+	// public void setEmail(String e){
+	// 	email = e;
+	// }
+
+	// public void setYear(int y){
+	// 	year = y;
+	// }
+
+	// public void setTimelinePosts(String s1, String s2, String s3){
+
+	// 	this.postTimeline(s1);
+	// 	this.postTimeline(s2);
+	// 	this.postTimeline(s3);
+
+	// }
 
 }//close MySocialProfile
 
@@ -164,49 +227,27 @@ class Event{
 }//close Event
 
 
-class Main{
-	MySocialProfile profile;
-	//Note: I think you need to put static back
-    public void main(String[] args) {
-        // MySocialProfile profile;
-       	int choice;
-        boolean run1=true;
-        boolean run2=true;
 
-        while(run1){
-	        //Main Menu 
-	        choice = this.mainMenu();
-
-	        //value if program goes outside switch statement or user wishes to exit program
-	        if (choice==-1 || choice==3){
-	        	System.out.println("Program is ending.");
-	        	run1=false;
-	        
-	        //user either created a new profile or loaded an existing one
-	        }else{
-
-	        	while(run2){
-	        		run2 = this.homeScreen();
-	        	}
-
-	        }
-	        run1=true;
-	    }//closes outside while
-    
-    }//closes public static void
+class UserAccount{
+	Scanner s = new Scanner(System.in); 
+	String filename = "e:\\mysocialprofile.txt"; 
+	MySocialProfile profile = new MySocialProfile();
+	
+	public UserAccount(){ 	} 
+	
 
 	/**
 	 * Creates a Main Menu where the user can: 
 	 * 1. Sign into their account 
 	 * 2. Load into an existing profile 
-	 * 3. Exist the program 
-	 * 
+	 * 3. Exit the program 
 	 * These will all be options the user can choose from. 
 	 * @return option -> option that the user chose, does this so that the program knows how to proceed
 	 * 	1 for create new account, 2 for loading an existing profile, 3 for exiting, -1 if it gets to outside the switch statement
 	 * @author Michael Volpi, Matthew Volpi, and Annika Hoag
 	 * @since 12/9/2022
 	 */
+
    
     public class UserAccount{
 	Scanner s = new Scanner(System.in); 
@@ -228,20 +269,58 @@ class Main{
 	} 
 	
 	public void createaccount(){ 
-		try{
+
+	public int mainMenu(){
+		// System.out.println("I'm in mainMenu");
+		s = new Scanner(System.in);
+		System.out.println("\n-------------------------------");
+		System.out.println("1. Create New Account");
+		System.out.println("2. Login with existing account");
+		System.out.println("3. Exit program.");
+		System.out.println("-------------------------------");
+		System.out.print("Enter Your Choice: ");
+		int choice = s.nextInt();
+		// if(choice == 1){
+		// 	// createaccount();
+		// }
+		return choice;
+			
+	}
+
+	public void createAccount(){ 
+  try{
 			Path path = Paths.get(filename.toString());
 			OutputStream output = new BufferedOutputStream(Files.newOutputStream(path, APPEND));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+
 			System.out.print("Enter your username: ");
 			String username = s.nextLine();
 			System.out.print("Enter password: ");
 			String password = s.nextLine();
 
 			writer.write(username + "," + password);
+
+			
+			System.out.print("Please enter your full name: ");
+			String name = s.nextLine();
+			System.out.print("Please enter your password: ");
+			String password = s.nextLine();
+
+			//I added these so that we don't forget to include them
+			System.out.println("Please enter your email: ");
+			String email = s.nextLine();
+
+			System.out.println("Please enter your class year: ");
+			int year = s.nextInt();
+
+			//this is me trying to include the other variables in the text file
+			//I also changed it to a semicolon since the timeline posts, events, and friend lists will need to be separated by commas
+			writer.write(name + ";" + email + ";" + password + ";" + year);
 			writer.newLine();
 			System.out.println("Account has been successfully created!");
 			writer.close();
 			output.close();
+
 
 			new UserAccount();
 		}catch(Exception ex){
@@ -255,6 +334,124 @@ class Main{
 }
 
 }  
+
+			profile = new MySocialProfile();
+			// new UserAccount();
+		}catch(Exception ex){
+			// System.out.println("I am in catch of try catch statement.");
+			System.out.print(ex.getMessage());
+		}
+	}//closes create account
+
+	public MySocialProfile getProfile(){
+		return profile;
+	} 
+
+}//close UserAccount
+
+class Main{
+	
+	public static void main(String[]args){
+		UserAccount user = new UserAccount();
+		MySocialProfile profile = new MySocialProfile();
+		Scanner scn = new Scanner(System.in);
+
+		boolean run1=true;
+		boolean run2 = true;
+		int mainMenuChoice;
+
+		// System.out.println("Before while loop");
+
+		while(run1){
+
+			//starts by calling Main Menu method 
+			mainMenuChoice = user.mainMenu();
+
+			// System.out.println(mainMenuChoice + " = mainMenuChoice");
+
+			//create account
+			if (mainMenuChoice == 1){
+				run2=true;
+				user.createAccount();
+				profile = user.getProfile();
+			
+			//login to existing account
+			}else if (mainMenuChoice == 2){
+				run2=true;
+
+			//exit program
+			}else if (mainMenuChoice == 3){
+				run2=false;
+				run1=false;
+			
+			}else{
+				System.out.println("Invalid option, please try again.");
+				run2=false;
+				run1=true;
+			}
+
+
+			//homescreen
+			while(run2){
+				System.out.println();
+				System.out.println("\n*next event to take place");
+				profile.printTimeline();
+				System.out.println("*list of all events ");
+
+				System.out.println("\nPlease choose an option.");
+				System.out.println("1. Post to timeline " +
+					"\n2. Add an event." +
+					"\n3. View your list of friends " +
+					"\n4. Add/remove a friend. " +
+					"\n5. Logout. ");
+				int choose = scn.nextInt();
+
+
+				switch(choose){
+					//post to timeline
+					case 1:
+						scn = new Scanner(System.in);
+						System.out.println("Please type your new timeline post: ");
+						String post = scn.nextLine();
+						profile.postTimeline(post);
+						run2 = true;
+						break;
+
+					//add an event
+					case 2:
+						run2 = true;
+						break;
+
+					//view list of friends	
+					case 3:
+						run2 =  true;
+						break;
+
+					//add/remove friend
+					case 4:
+						run2 = true;
+						break;
+
+					//logout
+					case 5:
+						run2 = false;
+						run1 = true;
+						break;
+
+					default:
+						run2 = true;
+						break;
+
+				}//closes switch
+
+
+			}//close inner while
+
+		}//close outside while
+
+	}
+
+}
 
 
 
