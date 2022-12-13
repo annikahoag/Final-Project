@@ -247,6 +247,29 @@ class UserAccount{
 	 * @author Michael Volpi, Matthew Volpi, and Annika Hoag
 	 * @since 12/9/2022
 	 */
+
+   
+    public class UserAccount{
+	Scanner s = new Scanner(System.in); 
+	String filename = "e:\\account.txt"; 
+	public UserAccount(){ 
+		try{ 
+			System.out.println("-------------------------------");
+			System.out.println("1. Create New Account");
+			System.out.println("2. Login with existing account");
+			System.out.println("-------------------------------");
+			System.out.print("Enter Your Choice: ");
+			String choice = s.nextLine();
+			if(choice.equals("1")){
+				createaccount();
+			}
+		}catch(Exception ex){ 
+
+		}
+	} 
+	
+	public void createaccount(){ 
+
 	public int mainMenu(){
 		// System.out.println("I'm in mainMenu");
 		s = new Scanner(System.in);
@@ -265,10 +288,18 @@ class UserAccount{
 	}
 
 	public void createAccount(){ 
-		try{
+  try{
 			Path path = Paths.get(filename.toString());
 			OutputStream output = new BufferedOutputStream(Files.newOutputStream(path, APPEND));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+
+			System.out.print("Enter your username: ");
+			String username = s.nextLine();
+			System.out.print("Enter password: ");
+			String password = s.nextLine();
+
+			writer.write(username + "," + password);
+
 			
 			System.out.print("Please enter your full name: ");
 			String name = s.nextLine();
@@ -289,6 +320,20 @@ class UserAccount{
 			System.out.println("Account has been successfully created!");
 			writer.close();
 			output.close();
+
+
+			new UserAccount();
+		}catch(Exception ex){
+			System.out.print(ex.getMessage());
+		}
+	} 
+
+	public static void main(String[]args){
+		new UserAccount();
+	}
+}
+
+}  
 
 			profile = new MySocialProfile();
 			// new UserAccount();
@@ -408,7 +453,6 @@ class Main{
 
 }
 
-  
 
 
 
