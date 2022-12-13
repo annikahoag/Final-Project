@@ -156,20 +156,20 @@ public class MySocialProfile{
 	} 
 
 	public void addOrRemoveFriend(String friendEmail){
-		System.out.println("I am numFriends: " + numFriends);
+		// System.out.println("I am numFriends: " + numFriends);
 
 		if(numFriends != 0){
 			int found = this.find(friendEmail, 0, numFriends-1);
-			System.out.println("I am found: " + found);
+			// System.out.println("I am found: " + found);
 			if (found == -1){
-				System.out.println("I'm going to add a friend");
+				// System.out.println("I'm going to add a friend");
 				this.addFriend(friendEmail);
 			}else{
 				this.removeFriend(friendEmail, found);
 			}
 
 		}else{
-			System.out.println("array was empty!");
+			// System.out.println("array was empty!");
 			this.addFriend(friendEmail);
 		}
 
@@ -200,9 +200,14 @@ public class MySocialProfile{
 
 		//add friend to list and increase numFriends
 		friends[numFriends] = friendEmail;
+
+		if (numFriends>=1){
+			this.sort(friendEmail);
+		}
 		numFriends++;
 
 		//sort
+
 
 		// if (friends.isEmpty()){
 		// 	friends.addFirst(friendEmail);
@@ -271,9 +276,35 @@ public class MySocialProfile{
  	}//closes find
 
 
- 	// private void sort(){
+ 	//uses insertion sort to add new friend to the list
+ 	private void sort(String friendEmail){
+ 		int insertIndex=-1;
 
- 	// }
+ 		for (int i=0; i<=numFriends; i++){
+
+ 			insertIndex = i;
+
+ 			while(insertIndex>0 && friends[insertIndex].compareTo(friendEmail)>0 ){
+ 				insertIndex--;
+ 			}
+
+ 			for(int k=numFriends; k>insertIndex; k--) {  // shift all bigger elements up
+				friends[k] = friends[k-1];
+			}
+		//LEFT OFF: still not working, need to walk through code and think of logic 
+ 		}//closes outer for loop
+
+
+ 		// System.out.println("1: ");
+ 		// this.displayFriends();
+ 		// for(int k=numFriends; k>insertIndex; k--) {  // shift all bigger elements up
+		// 	friends[k] = friends[k-1];
+		// }
+
+		// System.out.println("2: ");
+ 		// this.displayFriends();
+ 		friends[insertIndex] = friendEmail;
+ 	}
 
 
 
