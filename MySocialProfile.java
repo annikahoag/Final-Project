@@ -1,5 +1,8 @@
 import java.util.Scanner;
-import java.io.*;  
+import java.io.*; 
+import java.nio.file.*;
+import java.util.*; 
+import static java.nio.file.StandardOpenOption.*; 
 /** 
 * Class that stores objects representing a user's profile, as on a social media site.
 * @author Annika Hoag, Matthew Volpi, and Michael Volpi
@@ -204,190 +207,55 @@ class Main{
 	 * @author Michael Volpi, Matthew Volpi, and Annika Hoag
 	 * @since 12/9/2022
 	 */
-    public int mainMenu() {
-        // Prompt the user to select an option from the main menu
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Welcome to the Main Menu: ");
-        System.out.println("1. Create a new account/profile");
-        System.out.println("2. Load an existing profile");
-        System.out.println("3. Exit the program");
-        System.out.println("Enter the number of the option you want to select: ");
-        int option = scanner.nextInt();
+   
+    public class UserAccount{
+	Scanner s = new Scanner(System.in); 
+	String filename = "e:\\account.txt"; 
+	public UserAccount(){ 
+		try{ 
+			System.out.println("-------------------------------");
+			System.out.println("1. Create New Account");
+			System.out.println("2. Login with existing account");
+			System.out.println("-------------------------------");
+			System.out.print("Enter Your Choice: ");
+			String choice = s.nextLine();
+			if(choice.equals("1")){
+				createaccount();
+			}
+		}catch(Exception ex){ 
 
-        switch (option) {
-            case 1:
-                // If the user selects option 1, create a new account/profile
-                createAccount();
-                return 1;
-                break;
-            case 2:
-                // If the user selects option 2, load an existing profile (if one exists in the file)
-                loadProfile();
-                return 2;
-                break;
-            case 3:
-                // If the user selects option 3, exit the program
-                System.out.println("Goodbye!");
-                // System.exit(0);
-                return 3;
-                break;
-            default:
-                // If the user enters an invalid option, print an error message and return to the main menu
-                System.out.println("Invalid option. Please try again.");
-                mainMenu();
-        }
-        return -1;
-    }//closes main menu
-
-    //Note: have to add HomeScreen similar to Main Menu
-
-	/**
-	 * Creates a method where the user can create their own account with specified details
-	 * @author Michael Volpi 
-	 * @since 12/10/2022
-	 */
-    public void createAccount() {
-        // Prompt the user for their account details and create a new MySocialProfile for them
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your full name: ");
-        String userName = scanner.nextLine();
-        System.out.println("Enter your password: ");
-        String password = scanner.nextLine();
-        System.out.println("Enter your email: ");
-        String email = scanner.nextLine();
-        System.out.println("Enter your class year: ");
-        int classYear = scanner.nextInt();
-        profile = new MySocialProfile(userName, password, email, classYear);
-
-        // Write the user's profile to the mysocialprofile.txt file
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("mysocialprofile.txt", true));
-            writer.write(profile.toString());
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }//close createAccount
-
-    /**
-	 * Creates a method where you can sign into your account with data saved in the mysocialprofile.txt file
-	 * @author Michael Volpi 
-	 * @since 12/9/2022
-	 */
-    public void loadProfile() {
-	    // Prompt the user for their username and password and check if they have an existing profile in the mysocialprofile.txt file
-	    Scanner scanner = new Scanner(System.in);
-	    System.out.println("Enter your email ID: ");
-	    String email = scanner.nextLine();
-	    System.out.println("Enter your password: ");
-	    String password = scanner.nextLine();
-
-	    try {
-	        // Read the mysocialprofile.txt file line by line
-	        Scanner fileScanner = new Scanner(new File("mysocialprofile.txt"));
-	        while (fileScanner.hasNextLine()) {
-	            String line = fileScanner.nextLine();
-	            // Split the line into fields separated by commas
-	            String[] fields = line.split(";");
-
-	            /**
-	             * Note sure if this is right, but I needed to make this work with my code so I just did stuff that worked:
-	             * I also made a ; the separator idk how that works tho
-	             * Field 0 = name
-	             * Field 1 = email
-	             * Field 2 = password
-	             * Field 3 = class year
-	             * Field 4 = events
-	             * Field 5 = timeline posts
-	             * Field 6 = friends list
-	             */ 
-
-	            if (fields[1].equals(email) && fields[2].equals(password)) {
-	                // If the username and password match an existing profile, load the user's profile and display the details to the user
-
-	                // profile = new MySocialProfile(fields[0], fields[1], fields[2]);
-	            	
-	            	//temporary way to store existing profile info in the object we're currently using
-	            	profile.setName(field[0]);
-	            	profile.setEmail(field[1]);
-	            	profile.setPassword(field[2]);
-	            	profile.setYear((int)field[3]);
-
-
-	                System.out.println("Welcome, " + profile.name() + "!");
-	                System.out.println("Your profile details: ");
-	                // System.out.println("Username: " + profile.username());
-	                System.out.println("Password: " + profile.password());
-	                System.out.println("Email: " + profile.email());
-	                System.out.println("Class year: " + profile.classyear());
-	                return;
-	            }
-	        }
-	        // If the username and password do not match an existing profile, print an error message and return to the main menu
-	        System.out.println("Username and password do not match an existing profile. Please try again.");
-	        mainMenu();
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
+		}
+	} 
 	
-	}//close loadProfile
+	public void createaccount(){ 
+		try{
+			Path path = Paths.get(filename.toString());
+			OutputStream output = new BufferedOutputStream(Files.newOutputStream(path, APPEND));
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+			System.out.print("Enter your username: ");
+			String username = s.nextLine();
+			System.out.print("Enter password: ");
+			String password = s.nextLine();
 
+			writer.write(username + "," + password);
+			writer.newLine();
+			System.out.println("Account has been successfully created!");
+			writer.close();
+			output.close();
 
-	public boolean homeScreen(){
-		System.out.println("\n*next event to take place*");
-		profile.printTimeline();
-		System.out.println("*list of all events*");
+			new UserAccount();
+		}catch(Exception ex){
+			System.out.print(ex.getMessage());
+		}
+	} 
 
-		Scanner scn = new Scanner(System.in);
-		System.out.println("\nPlease choose an option.");
-		System.out.println("1. Post to timeline " +
-			"\n2. Add an event." +
-			"\n3. View your list of friends " +
-			"\n4. Add/remove a friend. " +
-			"\n5. Logout. ");
-		int choose = scn.nextInt();
+	public static void main(String[]args){
+		new UserAccount();
+	}
+}
 
-		switch(choose){
-
-			//post to timeline
-			case 1:
-				scn = new Scanner(System.in);
-				System.out.println("Please type your new timeline post: ");
-				String post = scn.nextLine();
-				profile.postTimeline(post);
-				return true;
-				break;
-
-			//add an event
-			case 2:
-				return true;
-				break;
-
-			//view list of friends	
-			case 3:
-				return true;
-				break;
-
-			//add/remove friend
-			case 4:
-				return true;
-				break;
-
-			//logout
-			case 5:
-				return false;
-				break;
-
-			default:
-				return true;
-				break;
-
-			}//closes switch
-
-	}//closes homeScreen
+}  
 
 
 
-	// }//closes public static void
-}//close Main
+
