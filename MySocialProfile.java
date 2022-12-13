@@ -222,7 +222,70 @@ public class MySocialProfile{
 
 class Event{
 
-//Methods: display next event, display all events, add an event
+class Event{
+
+//Display next scheduled event 
+
+    public String eventDisplay(Model model){ 
+    
+    }
+
+//Display list of all events they're planning to attend 
+
+    public String createEvent(){
+        s = new Scanner
+
+    }
+
+//Display Current Date 
+
+//Event Details 
+
+    public static void currentTime(String[] args) {
+
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss");
+    LocalDateTime now = LocalDateTime.now();
+    System.out.println(dtf.format(now));        //  2022/12/13 xx:xx:xx
+
+    }
+
+//Display Data/Time for Event(s) 
+
+    public static void eventTime(String[] argv) throws ParseException {
+
+        //1. Create a Date from String
+        // these will be user inputs SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm");
+        //these will be user inputs String dateInString = "13-12-2022 10:20";
+        Date date = sdf.parse(dateInString);
+                DateAndCalendar obj = new DateAndCalendar();
+
+        //2. Test - Convert Date to Calendar
+        Calendar calendar = obj.dateToCalendar(date);
+        System.out.println(calendar.getTime());
+        
+        //3. Test - Convert Calendar to Date
+        Date newDate = obj.calendarToDate(calendar);
+        System.out.println(newDate);
+
+    }
+
+    //Convert Date to Calendar
+    private Calendar dateToCalendar(Date date) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+
+    }
+
+    //Convert Calendar to Date
+    private Date calendarToDate(Calendar calendar) {
+        return calendar.getTime();
+    }
+
+
+
+}//close Event
 
 }//close Event
 
@@ -247,29 +310,6 @@ class UserAccount{
 	 * @author Michael Volpi, Matthew Volpi, and Annika Hoag
 	 * @since 12/9/2022
 	 */
-
-   
-    public class UserAccount{
-	Scanner s = new Scanner(System.in); 
-	String filename = "e:\\account.txt"; 
-	public UserAccount(){ 
-		try{ 
-			System.out.println("-------------------------------");
-			System.out.println("1. Create New Account");
-			System.out.println("2. Login with existing account");
-			System.out.println("-------------------------------");
-			System.out.print("Enter Your Choice: ");
-			String choice = s.nextLine();
-			if(choice.equals("1")){
-				createaccount();
-			}
-		}catch(Exception ex){ 
-
-		}
-	} 
-	
-	public void createaccount(){ 
-
 	public int mainMenu(){
 		// System.out.println("I'm in mainMenu");
 		s = new Scanner(System.in);
@@ -288,18 +328,10 @@ class UserAccount{
 	}
 
 	public void createAccount(){ 
-  try{
+		try{
 			Path path = Paths.get(filename.toString());
 			OutputStream output = new BufferedOutputStream(Files.newOutputStream(path, APPEND));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
-
-			System.out.print("Enter your username: ");
-			String username = s.nextLine();
-			System.out.print("Enter password: ");
-			String password = s.nextLine();
-
-			writer.write(username + "," + password);
-
 			
 			System.out.print("Please enter your full name: ");
 			String name = s.nextLine();
@@ -320,20 +352,6 @@ class UserAccount{
 			System.out.println("Account has been successfully created!");
 			writer.close();
 			output.close();
-
-
-			new UserAccount();
-		}catch(Exception ex){
-			System.out.print(ex.getMessage());
-		}
-	} 
-
-	public static void main(String[]args){
-		new UserAccount();
-	}
-}
-
-}  
 
 			profile = new MySocialProfile();
 			// new UserAccount();
@@ -452,7 +470,3 @@ class Main{
 	}
 
 }
-
-
-
-
