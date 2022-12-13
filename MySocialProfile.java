@@ -20,7 +20,8 @@ public class MySocialProfile{
 	int numTimeline	= 0; 	//count of number of timeline posts
 	int front = 0; 			//index of front of queue holding the timeline posts, oldest timeline post
 
-	SinglyLinkedList friends = new SinglyLinkedList();
+	String [] friends = new String[50]; //array to store list of friends
+	int numFriends = 0; //size of friends array
 
 	//constructor 
 	public MySocialProfile(){ }
@@ -141,55 +142,139 @@ public class MySocialProfile{
 	 * @since 12/13/2022
 	 */  
 	public void displayFriends (){
-		friends.display();
+		System.out.println();
+
+		if (numFriends != 0){
+
+			for (int i=0; i < numFriends; i++){
+				System.out.print(friends[i] + ", ");
+			}
+
+		}
+		System.out.println();
+		// friends.display();
 	} 
 
+	public void addOrRemoveFriend(String friendEmail){
+		System.out.println("I am numFriends: " + numFriends);
+
+		if(numFriends != 0){
+			int found = this.find(friendEmail, 0, numFriends-1);
+			System.out.println("I am found: " + found);
+			if (found == -1){
+				System.out.println("I'm going to add a friend");
+				this.addFriend(friendEmail);
+			}else{
+				this.removeFriend(friendEmail, found);
+			}
+
+		}else{
+			System.out.println("array was empty!");
+			this.addFriend(friendEmail);
+		}
+
+	}
+
 	/**
-	 * Adds a friend's email to the SinglyLinkedList titled friends
-	 * Uses addFirst and addLast method from the SinglyLinkedList class provided by Prof. Tarimo
+	 * going to use a sorted array in order to be able to do binary search
 	 * @param friendEmail -> email ID of the friend to be added the list
 	 * @author Annika Hoag using methods by Prof. Tarimo
 	 * @since 12/13/2022
 	 */ 
-	public void addFriend(String friendEmail){
+	private void addFriend(String friendEmail){
 
-		if (friends.isEmpty()){
-			friends.addFirst(friendEmail);
-		}else{
-			friends.addLast(friendEmail);
-		}
+		//can no longer add values to the array so have to resize
+		if (numFriends >= friends.length){
+
+			String [] friendsTemp = new String[friends.length];
+			for (int i=0; i<friendsTemp.length; i++){
+				friendsTemp[i] = friends[i];
+			}
+
+			friends = new String[friends.length * 2];
+			for (int i=0; i<friends.length; i++){
+				friends[i] = friendsTemp[i];
+			}
+
+		}//closes if 
+
+		//add friend to list and increase numFriends
+		friends[numFriends] = friendEmail;
+		numFriends++;
+
+		//sort
+
+		// if (friends.isEmpty()){
+		// 	friends.addFirst(friendEmail);
+		// }else{
+		// 	friends.addLast(friendEmail);
+		// }
 	}
 
 	//method to remove friend
-	public void removeFriend(String friendEmail){
+	private void removeFriend(String friendEmail, int foundIndex){
 
-		boolean found = this.find(friendEmail);
+		// int foundIndex = this.find(friendEmail, 0, numFriends+1);
 
-		if (!found){
-			System.out.println("Friend could not be found in the list.");
-		}else{
+		//NEED TO SHIFT VALUES AND REMOVE ONCE THE VALUE HAS BEEN REMOVED 
+		
+		// boolean found = this.find(friendEmail);
 
-		}
+		// if (!found){
+		// 	System.out.println("Friend could not be found in the list.");
+		// }else{
+
+		// }
 
 	}
 
-	//helper method to remove friend
-	private boolean find(String friendEmail){
+	//helper method to find the index of a friend so it can removed
+	//binary search
+	private int find(String friendEmail, int low, int high){
 
-		//may need to do !.equals instead of !=
-		while (friends.getNext() != null){
+		int mid = (low + high) / 2;
 
-			if (friends.getElement().equals(friendEmail)){
-				//figure out how to remove intermediate value
-				return true;
+		//base case
+		if (friendEmail.equals(friends[mid]) ){
+			return mid;
+
+		//recursive case(s)
+		}else{
+
+			//if low>high that means friend is not in the list
+			if (low>high){
+				return -1;
+			
+			
+			}else if (friendEmail.compareTo(friends[mid]) < 0){
+				return find(friendEmail, low, mid-1);
+			
 			}else{
-				continue;
+				return find(friendEmail, mid+1, high);
 			}
 
-		}//closes while loop
+		}	
 
-		return false;
-	}//closes fined
+	// 	//may need to do !.equals instead of !=
+	// 	while (friends.getNext() != null){
+
+	// 		if (friends.getElement().equals(friendEmail)){
+	// 			//figure out how to remove intermediate value
+	// 			return true;
+	// 		}else{
+	// 			continue;
+	// 		}
+
+	// 	}//closes while loop
+
+	// 	return false;
+ 	}//closes find
+
+
+ 	// private void sort(){
+
+ 	// }
+
 
 
 //NOT SURE IF I WILL NEED THESE SO THEYRE JUST COMMENTED OUT FOR NOW
@@ -222,70 +307,7 @@ public class MySocialProfile{
 
 class Event{
 
-class Event{
-
-//Display next scheduled event 
-
-    public String eventDisplay(Model model){ 
-    
-    }
-
-//Display list of all events they're planning to attend 
-
-    public String createEvent(){
-        s = new Scanner
-
-    }
-
-//Display Current Date 
-
-//Event Details 
-
-    public static void currentTime(String[] args) {
-
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss");
-    LocalDateTime now = LocalDateTime.now();
-    System.out.println(dtf.format(now));        //  2022/12/13 xx:xx:xx
-
-    }
-
-//Display Data/Time for Event(s) 
-
-    public static void eventTime(String[] argv) throws ParseException {
-
-        //1. Create a Date from String
-        // these will be user inputs SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm");
-        //these will be user inputs String dateInString = "13-12-2022 10:20";
-        Date date = sdf.parse(dateInString);
-                DateAndCalendar obj = new DateAndCalendar();
-
-        //2. Test - Convert Date to Calendar
-        Calendar calendar = obj.dateToCalendar(date);
-        System.out.println(calendar.getTime());
-        
-        //3. Test - Convert Calendar to Date
-        Date newDate = obj.calendarToDate(calendar);
-        System.out.println(newDate);
-
-    }
-
-    //Convert Date to Calendar
-    private Calendar dateToCalendar(Date date) {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar;
-
-    }
-
-    //Convert Calendar to Date
-    private Date calendarToDate(Calendar calendar) {
-        return calendar.getTime();
-    }
-
-
-
-}//close Event
+//Methods: display next event, display all events, add an event
 
 }//close Event
 
@@ -377,6 +399,7 @@ class Main{
 		boolean run1=true;
 		boolean run2 = true;
 		int mainMenuChoice;
+		String friendEmail;
 
 		// System.out.println("Before while loop");
 
@@ -442,11 +465,20 @@ class Main{
 
 					//view list of friends	
 					case 3:
+						profile.displayFriends();
 						run2 =  true;
 						break;
 
 					//add/remove friend
 					case 4:
+						scn = new Scanner(System.in);
+						System.out.println("Please enter the email address of the friend you wish to find. " +
+							"\nPlease type the email with exact characters (lowercase, uppercase, etc.) and no extra spaces. " +
+							"\nIf the email address is found that friend will be removed, otherwise it will be added to your list of friends");
+						friendEmail = scn.nextLine();
+
+						profile.addOrRemoveFriend(friendEmail);
+
 						run2 = true;
 						break;
 
@@ -470,3 +502,8 @@ class Main{
 	}
 
 }
+
+  
+
+
+
