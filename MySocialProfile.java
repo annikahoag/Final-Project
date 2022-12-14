@@ -22,6 +22,7 @@ public class MySocialProfile{
 
 	String [] friends = new String[50]; //array to store list of friends
 	int numFriends = 0; //size of friends array
+	int mid; //stores value of mid in binary search
 
 	//constructor 
 	public MySocialProfile(){ }
@@ -152,45 +153,80 @@ public class MySocialProfile{
 
 		}
 		System.out.println();
-		// friends.display();
 	} 
 
-	public void addOrRemoveFriend(String friendEmail){
-		// System.out.println("I am numFriends: " + numFriends);
 
+	/**
+	 * Decides whether to add or remove the given friend's email ID
+	 * Also changes instance variable mid as needed to indicate where email belongs or already is
+	 * @param friendEmail -> email ID inputted by user that will  either be added or removed
+	 * @author Annika Hoag
+	 * @since 12/13/2022
+	 */ 
+	public void addOrRemoveFriend(String friendEmail){
+	
+		//first check if friends[] is empty
 		if(numFriends != 0){
-			int found = this.find(friendEmail, 0, numFriends-1);
-			// System.out.println("I am found: " + found);
-			if (found == -1){
-				// System.out.println("I'm going to add a friend");
-				this.addFriend(friendEmail);
-			}else{
-				this.removeFriend(friendEmail, found);
+
+			/** 
+			 * Check if friendEmail is already in friends[] using helper method
+			 * If found=true, remove that email from friends[],
+			 * 	else add that email to friends[]
+			 */ 
+			boolean found = this.find(friendEmail, 0, numFriends-1);
+
+			/**
+			 * Uses instance variable mid to store index where friendEmail was found, or where it belongs
+			 * Mid will need to be increased by 1 unless mid=0 or is less than the current email at index 0
+			 * If mid=0 then the new email should only go at 0 if it's less than the current email at index 0
+			 */ 
+			if(mid!=0 || friendEmail.compareTo(friends[mid])>0){
+				mid++;
 			}
 
+
+			//if email isn't found, add to friends[]
+			if (!found){
+				this.addFriend(friendEmail);
+
+			//otherwise removed email	
+			}else{
+				this.removeFriend(friendEmail, mid);
+			}
+
+
+		//if empty no need to see if email is already in friends[]
 		}else{
-			// System.out.println("array was empty!");
 			this.addFriend(friendEmail);
 		}
 
-	}
+	}//closes addOrRemove
 
 	/**
-	 * going to use a sorted array in order to be able to do binary search
+	 * Adds friend's email to friends[]
+	 * Creates a sorted array from A-Z, in order for it to be possible to do binary search
 	 * @param friendEmail -> email ID of the friend to be added the list
 	 * @author Annika Hoag using methods by Prof. Tarimo
 	 * @since 12/13/2022
 	 */ 
 	private void addFriend(String friendEmail){
 
-		//can no longer add values to the array so have to resize
+		//If the array is at capacity, we must resize it
 		if (numFriends >= friends.length){
 
+			/**
+			 * Creates a temp array to store values of original friends[] array
+			 * Copies values over
+			 */ 
 			String [] friendsTemp = new String[friends.length];
 			for (int i=0; i<friendsTemp.length; i++){
 				friendsTemp[i] = friends[i];
 			}
 
+			/**
+			 * Re-instantiate friends[] w/ double the orig. length
+			 * Copy values in temp. array to new friends[] array
+			 */ 
 			friends = new String[friends.length * 2];
 			for (int i=0; i<friends.length; i++){
 				friends[i] = friendsTemp[i];
@@ -198,23 +234,21 @@ public class MySocialProfile{
 
 		}//closes if 
 
-		//add friend to list and increase numFriends
-		friends[numFriends] = friendEmail;
 
-		if (numFriends>=1){
-			this.sort(friendEmail);
+		/**
+		 * Use helper method to shift values and make room for new email,
+		 * 	unless there's no other values in friends[] or the value goes at the end
+		 */ 
+		if (numFriends>=1 && mid != numFriends){
+			this.shift();
 		}
+
+		//Store friend's email at mid, increase numFriends
+		friends[mid] = friendEmail;
 		numFriends++;
+	
+	}//closes addFriend
 
-		//sort
-
-
-		// if (friends.isEmpty()){
-		// 	friends.addFirst(friendEmail);
-		// }else{
-		// 	friends.addLast(friendEmail);
-		// }
-	}
 
 	//method to remove friend
 	private void removeFriend(String friendEmail, int foundIndex){
@@ -233,77 +267,66 @@ public class MySocialProfile{
 
 	}
 
-	//helper method to find the index of a friend so it can removed
-	//binary search
-	private int find(String friendEmail, int low, int high){
 
-		int mid = (low + high) / 2;
+	/**
+	 * Helper method to find given friendEmail using recursive binary search
+	 * @param friendEmail -> email ID to be searched for 
+	 * @param low -> lower boundary of the part of the array we're currently searching
+	 * @param high -> upper boundary of the part of the array we're currently searching
+	 * @return -> true if friendEmail was found in friends[], false otherwise
+	 * @author Annika Hoag
+	 * @since 12/13/2022
+	 */ 
+	private boolean find(String friendEmail, int low, int high){
 
-		//base case
+		//calculate middle index of the part of the array we're currently searching
+		mid = (low + high) / 2;
+
+		//Base case -> friendEmail is found at mid
 		if (friendEmail.equals(friends[mid]) ){
-			return mid;
+			return true;
 
-		//recursive case(s)
+		//Recursive case(s)
 		}else{
 
 			//if low>high that means friend is not in the list
 			if (low>high){
-				return -1;
+				return false;
 			
-			
+			/**
+			 * Check if friendEmail is less than friends[mid]
+			 * If true, that means friendEmail comes before friends[mid] in the alphabet
+			 * Re-call find with upper bound being 1 less than mid
+			 */ 
 			}else if (friendEmail.compareTo(friends[mid]) < 0){
+				System.out.println(friendEmail.compareTo(friends[mid]));
 				return find(friendEmail, low, mid-1);
 			
+			/**
+			 * Otherwise friendEmail comes after friends[mid] in the alphabet
+			 * Re-call find with lower bound being 1 more than mid
+			 */ 
 			}else{
 				return find(friendEmail, mid+1, high);
 			}
 
 		}	
 
-	// 	//may need to do !.equals instead of !=
-	// 	while (friends.getNext() != null){
-
-	// 		if (friends.getElement().equals(friendEmail)){
-	// 			//figure out how to remove intermediate value
-	// 			return true;
-	// 		}else{
-	// 			continue;
-	// 		}
-
-	// 	}//closes while loop
-
-	// 	return false;
  	}//closes find
 
 
- 	//uses insertion sort to add new friend to the list
- 	private void sort(String friendEmail){
- 		int insertIndex=-1;
+ 	/**
+ 	 * Helper method to shift all values in friends[] from numFriends to mid
+ 	 * This allows a new value to be inserted into friends[] following alphabetical order
+ 	 * @author Annika Hoag
+ 	 * @since 12/14/2022
+ 	 */ 
+ 	private void shift(){
+		
+		for (int i = numFriends; i>mid; i--){
+			friends[i] = friends[i-1];
+		} 		
 
- 		for (int i=0; i<=numFriends; i++){
-
- 			insertIndex = i;
-
- 			while(insertIndex>0 && friends[insertIndex].compareTo(friendEmail)>0 ){
- 				insertIndex--;
- 			}
-
- 			for(int k=numFriends; k>insertIndex; k--) {  // shift all bigger elements up
-				friends[k] = friends[k-1];
-			}
-		//LEFT OFF: still not working, need to walk through code and think of logic 
- 		}//closes outer for loop
-
-
- 		// System.out.println("1: ");
- 		// this.displayFriends();
- 		// for(int k=numFriends; k>insertIndex; k--) {  // shift all bigger elements up
-		// 	friends[k] = friends[k-1];
-		// }
-
-		// System.out.println("2: ");
- 		// this.displayFriends();
- 		friends[insertIndex] = friendEmail;
  	}
 
 
