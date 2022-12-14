@@ -206,7 +206,7 @@ public class MySocialProfile{
 	 * Adds friend's email to friends[]
 	 * Creates a sorted array from A-Z, in order for it to be possible to do binary search
 	 * @param friendEmail -> email ID of the friend to be added the list
-	 * @author Annika Hoag using methods by Prof. Tarimo
+	 * @author Annika Hoag
 	 * @since 12/13/2022
 	 */ 
 	private void addFriend(String friendEmail){
