@@ -235,6 +235,7 @@ public class MySocialProfile{
 		}//closes if 
 
 
+
 		/**
 		 * Use helper method to shift values and make room for new email,
 		 * 	unless there's no other values in friends[] or the value goes at the end
@@ -366,11 +367,41 @@ class Event{
 }//close Event
 
 
+
 class UserAccount{
-Scanner s = new Scanner(System.in); 
-Main runmain = new Main();
+	Scanner s = new Scanner(System.in); 
+	Main runmain = new Main();
 	String filename = "mysocialprofile.txt"; 
+	
 	public UserAccount(){ 
+		// try{ 
+		// 	System.out.println("-------------------------------");
+		// 	System.out.println("1. Create New Account");
+		// 	System.out.println("2. Login with existing account");
+		// 	System.out.println("3. Quit");
+		// 	System.out.println("-------------------------------");
+		// 	System.out.print("Enter Your Choice: ");
+		// 	String choice = s.nextLine();
+		// 	if(choice.equals("1")){
+		// 		createaccount();
+		// 	}else if(choice.equals("2")){
+		// 		login();
+		// 	}else if(choice.equals("3")){
+		// 		System.exit(0);
+		// 	}else{
+		// 		System.out.print("Invalid option.\n");
+		// 		new UserAccount();
+		// 	}
+		// }catch(Exception ex){ 
+
+		// }
+	} 
+
+
+	//main menu screen
+	public int mainMenu(){
+		int choice=-1;
+
 		try{ 
 			System.out.println("-------------------------------");
 			System.out.println("1. Create New Account");
@@ -378,21 +409,23 @@ Main runmain = new Main();
 			System.out.println("3. Quit");
 			System.out.println("-------------------------------");
 			System.out.print("Enter Your Choice: ");
-			String choice = s.nextLine();
-			if(choice.equals("1")){
-				createaccount();
-			}else if(choice.equals("2")){
-				login();
-			}else if(choice.equals("3")){
-				System.exit(0);
-			}else{
-				System.out.print("Invalid option.\n");
-				new UserAccount();
-			}
+			choice = s.nextInt();
+			// if(choice.equals("1")){
+			// 	createaccount();
+			// }else if(choice.equals("2")){
+			// 	login();
+			// }else if(choice.equals("3")){
+			// 	System.exit(0);
+			// }else{
+			// 	System.out.print("Invalid option.\n");
+			// 	new UserAccount();
+			// }
 		}catch(Exception ex){ 
-
+			choice=-1;
 		}
-	} 
+
+		return choice;
+	}
 
 
 	/**
@@ -401,11 +434,9 @@ Main runmain = new Main();
  	 * @author Michael Volpi 
  	 * @since 12/14/2022
  	 */ 
-
-
 	void login(){
 		try{
-			Path path = Paths.get(filename.toString());
+			Path path = Paths.get(filename);
 			InputStream input = Files.newInputStream(path);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 			System.out.println("\n**Login To Your Account**\n");
@@ -448,12 +479,9 @@ Main runmain = new Main();
  	 * @author Michael Volpi 
  	 * @since 12/14/2022
  	 */ 
-
-
-	
 	public void createaccount(){ 
 		try{
-			Path path = Paths.get(filename.toString());
+			Path path = Paths.get(filename);
 			OutputStream output = new BufferedOutputStream(Files.newOutputStream(path, APPEND));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
 			System.out.println("\n**Create A New Account**\n");
@@ -474,64 +502,94 @@ Main runmain = new Main();
 		}
 	} 
 
-	public static void main(String[]args){
-		new UserAccount();
-	}
-
-}
+	// public static void main(String[]args){
+	// 	new UserAccount();
+	// }
 
 
-class Main{ 
+}//closes UserAccount()
+
+
+
+class Main{
+	
 	public static void main(String[]args){
 		UserAccount user = new UserAccount();
 		MySocialProfile profile = new MySocialProfile();
 		Scanner scn = new Scanner(System.in);
-		
-		boolean run = true;
+
+		boolean run1=true;
+		boolean run2 = true;
 		int mainMenuChoice;
 		String friendEmail;
 
-	while(run){ 
-		System.out.println();
-		System.out.println("-------------------------------");
-		System.out.println("\nWelcome To Your Profile!");
+		// System.out.println("Before while loop");
 
-		System.out.print("\n*Next Event To Take Place: ");
-		profile.printTimeline();
+		while(run1){
 
-		System.out.println("\n List Of All Events: ");
-		//profile.printEvents();
+			//starts by calling Main Menu method 
+			mainMenuChoice = user.mainMenu();
 
-		System.out.println("-------------------------------");
-		System.out.println("\nChoose An Option.\n");
-		System.out.println("1.) Post To Your Timeline");
-		System.out.println("2.) Add an Event");
-		System.out.println("3.) View your friendslist");
-		System.out.println("4. ) Add/Remove a friend");
-		System.out.println("5.) Back");
-		System.out.println("-------------------------------");
+			// System.out.println(mainMenuChoice + " = mainMenuChoice");
 
-		int choose = scn.nextInt();
+			//create account
+			if (mainMenuChoice == 1){
+				run2=true;
+				user.createaccount();
+				// profile = user.getProfile();
+			
+			//login to existing account
+			}else if (mainMenuChoice == 2){
+				run2=true;
+				user.login();
 
-		switch(choose){
+			//exit program
+			}else if (mainMenuChoice == 3){
+				run2=false;
+				run1=false;
+			
+			}else{
+				System.out.println("Invalid option, please try again.");
+				run2=false;
+				run1=true;
+			}
+
+
+			//homescreen
+			while(run2){
+				System.out.println();
+				System.out.println("\n*next event to take place");
+				profile.printTimeline();
+				System.out.println("*list of all events ");
+
+				System.out.println("\nPlease choose an option.");
+				System.out.println("1. Post to timeline " +
+					"\n2. Add an event." +
+					"\n3. View your list of friends " +
+					"\n4. Add/remove a friend. " +
+					"\n5. Logout. ");
+				int choose = scn.nextInt();
+
+
+				switch(choose){
 					//post to timeline
 					case 1:
 						scn = new Scanner(System.in);
 						System.out.println("Please type your new timeline post: ");
 						String post = scn.nextLine();
 						profile.postTimeline(post);
-						run = true;
+						run2 = true;
 						break;
 
 					//add an event
 					case 2:
-						run = true;
+						run2 = true;
 						break;
 
 					//view list of friends	
 					case 3:
 						profile.displayFriends();
-						run =  true;
+						run2 =  true;
 						break;
 
 					//add/remove friend
@@ -544,29 +602,31 @@ class Main{
 
 						profile.addOrRemoveFriend(friendEmail);
 
-						run = true;
+						run2 = true;
 						break;
 
-					//quit
+					//logout
 					case 5:
-						run = false;
-
+						run2 = false;
+						run1 = true;
 						break;
 
 					default:
-						run = true;
+						run2 = true;
 						break;
 
 				}//closes switch
 
+
+			}//close inner while
+
+		}//close outside while
+
 	}
 
-
-}
 }
 
-
-
+  
 
 
 
