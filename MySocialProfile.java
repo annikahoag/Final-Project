@@ -191,7 +191,7 @@ public class MySocialProfile{
 
 			//otherwise removed email	
 			}else{
-				this.removeFriend(friendEmail, mid);
+				this.removeFriend(friendEmail);
 			}
 
 
@@ -252,7 +252,16 @@ public class MySocialProfile{
 
 
 	//method to remove friend
-	private void removeFriend(String friendEmail, int foundIndex){
+	private void removeFriend(String friendEmail){
+
+		for (int i = mid; i < numFriends; i++){
+
+			friends[i] = friends [i+1];
+
+		}
+
+		numFriends--;
+
 
 		// int foundIndex = this.find(friendEmail, 0, numFriends+1);
 
@@ -330,7 +339,9 @@ public class MySocialProfile{
 
  	}
 
-
+ 	// public String[] getFriends(){
+ 	// 	return friends;
+ 	// }
 
 //NOT SURE IF I WILL NEED THESE SO THEYRE JUST COMMENTED OUT FOR NOW
 	// public void setName(String n){
@@ -370,31 +381,12 @@ class Event{
 
 class UserAccount{
 	Scanner s = new Scanner(System.in); 
-	Main runmain = new Main();
+	// Main runmain = new Main();
+	Path path;
 	String filename = "mysocialprofile.txt"; 
 	
-	public UserAccount(){ 
-		// try{ 
-		// 	System.out.println("-------------------------------");
-		// 	System.out.println("1. Create New Account");
-		// 	System.out.println("2. Login with existing account");
-		// 	System.out.println("3. Quit");
-		// 	System.out.println("-------------------------------");
-		// 	System.out.print("Enter Your Choice: ");
-		// 	String choice = s.nextLine();
-		// 	if(choice.equals("1")){
-		// 		createaccount();
-		// 	}else if(choice.equals("2")){
-		// 		login();
-		// 	}else if(choice.equals("3")){
-		// 		System.exit(0);
-		// 	}else{
-		// 		System.out.print("Invalid option.\n");
-		// 		new UserAccount();
-		// 	}
-		// }catch(Exception ex){ 
-
-		// }
+	public UserAccount(){
+		path = Paths.get("mysocialprofile.txt");
 	} 
 
 
@@ -436,7 +428,8 @@ class UserAccount{
  	 */ 
 	void login(){
 		try{
-			Path path = Paths.get(filename);
+			s = new Scanner(System.in);
+			// Path path = Paths.get("mysocialprofile.txt");
 			InputStream input = Files.newInputStream(path);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 			System.out.println("\n**Login To Your Account**\n");
@@ -481,7 +474,8 @@ class UserAccount{
  	 */ 
 	public void createaccount(){ 
 		try{
-			Path path = Paths.get(filename);
+			s = new Scanner(System.in);
+			// Path path = Paths.get("mysocialprofile.txt");
 			OutputStream output = new BufferedOutputStream(Files.newOutputStream(path, APPEND));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
 			System.out.println("\n**Create A New Account**\n");
@@ -497,8 +491,8 @@ class UserAccount{
 			output.close();
 
 			new UserAccount();
-		}catch(Exception ex){
-			System.out.print(ex.getMessage());
+		}catch(IOException e){
+			e.printStackTrace();
 		}
 	} 
 
