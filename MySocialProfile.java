@@ -409,16 +409,28 @@ public class MySocialProfile{
  * @author Matthew Volpi 
  * @since 12/17/22
  */
-class Event implements Comparable<Event> {
+	class Event implements Comparable<Event>{
 	
 	//instance variables for Event object
-	String name;
-	String date;
+	String name, location, expirationDate;
+	int day, month, year;
 	
-	//constructor
-	public Event(String name, String date) {
+	/**
+	 * Constructor for Event object
+	 * @param name -> name of event
+	 * @param location -> location of event
+	 * @param day -> day of event
+	 * @param month -> month of event
+	 * @param year -> year of event
+	 * @param expirationDate -> expiration date for event
+	 */
+	public Event(String name, String location, int day, int month, int year, LocalDate expirationDate){
 		this.name = name;
-		this.date = date;
+		this.location = location;
+		this.day = day;
+		this.month = month;
+		this.year = year;
+		this.expirationDate = expirationDate;
 	}
 	
 	/**
@@ -707,4 +719,3 @@ class Main{
 
 }
 
-  
