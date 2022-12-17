@@ -371,12 +371,80 @@ public class MySocialProfile{
 }//close MySocialProfile
 
 
-class Event{
+/**
+ * Class that represents an event, with a name and date
+ * @author Matthew Volpi 
+ * @since 12/17/22
+ */
 
-//Methods: display next event, display all events, add an event
+public class Event implements Comparable<Event> {
+	
+	//instance variables for Event object
+	String name;
+	String date;
+	
+	//constructor
+	public Event(String name, String date) {
+		this.name = name;
+		this.date = date;
+	}
+	
+	/**
+	 * Compares this event to another event based on their dates
+	 * @param other -> the other event to compare to
+	 * @return a negative integer if this event's date is earlier, 0 if the dates are the same, or a positive integer if this event's date is later
+	 * @author Matthew Volpi + Michael Volpi 
+	 * @since 12/17/22
+	 */
+	@Override
+	public int compareTo(Event other) {
+		return this.date.compareTo(other.date);
+	}
+	
+	/**
+	 * Returns a string representation of this event
+	 * @return the name and date of this event
+	 * @author Matthew Volpi 
+	 * @since 12/17/22
+	 */
+	@Override
+	public String toString() {
+		return this.name + ": " + this.date;
+	}
+}
 
+/**
+ * Class that stores a priority queue of events in order of their dates
+ * @author Matthew Volpi
+ * @since 12/17/22
+ */
+public class EventQueue {
+	
+	// Priority queue to store events
+	ArrayPriorityQueue events = new ArrayPriorityQueue(100);
+	
+	/**
+	 * Adds a new event to the priority queue of events
+	 * @param event -> the event to be added
+	 * @author Matthew Volpi 
+	 * @since 12/17/22
+	 */ 
+	public void addEvent(Event event) {
+		events.insert(event);
+	}
+	
+	/**
+	 * Prints the events in the priority queue in order of date
+	 * @author Matthew Volpi 
+	 * @since 12/17/22
+	 */
+	public void displayEvents() {
+		while (!events.isEmpty()) {
+			System.out.println(events.extractMin());
+		}
+	}
+	
 }//close Event
-
 
 
 class UserAccount{
@@ -577,6 +645,19 @@ class Main{
 
 					//add an event
 					case 2:
+						//prompt the user for the event details 
+						System.out.print("Enter the name of the event: ");
+						String eventName = input.nextLine();
+						System.out.print("Enter the date of the event (YYYY-MM-DD");
+						String eventDate = input.nextLine();
+
+						//Creates a new event object with the user-provided details 
+						Event newEvent = new Event(eventName, eventDate);
+
+						//Add the new event to the event queue
+						events.addEvent(newEvent);
+
+						System.out.println("Event added Successfully!");
 						run2 = true;
 						break;
 
@@ -621,6 +702,5 @@ class Main{
 }
 
   
-
 
 
