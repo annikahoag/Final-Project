@@ -409,28 +409,16 @@ public class MySocialProfile{
  * @author Matthew Volpi 
  * @since 12/17/22
  */
-	class Event implements Comparable<Event>{
+class Event implements Comparable<Event> {
 	
 	//instance variables for Event object
-	String name, location, expirationDate;
-	int day, month, year;
+	String name;
+	String date;
 	
-	/**
-	 * Constructor for Event object
-	 * @param name -> name of event
-	 * @param location -> location of event
-	 * @param day -> day of event
-	 * @param month -> month of event
-	 * @param year -> year of event
-	 * @param expirationDate -> expiration date for event
-	 */
-	public Event(String name, String location, int day, int month, int year, LocalDate expirationDate){
+	//constructor
+	public Event(String name, String date) {
 		this.name = name;
-		this.location = location;
-		this.day = day;
-		this.month = month;
-		this.year = year;
-		this.expirationDate = expirationDate;
+		this.date = date;
 	}
 	
 	/**
@@ -459,6 +447,12 @@ public class MySocialProfile{
 }//close Event class
 
 
+	/**
+	 * Class that creates the user's profile/account 
+	 * @author Michael Volpi 
+	 * @since 12/17/22
+	 */
+
 class UserAccount{
 	Scanner s = new Scanner(System.in); 
 	// Main runmain = new Main();
@@ -470,7 +464,15 @@ class UserAccount{
 	} 
 
 
-	//main menu screen
+	/**
+	 * method that creates the Main Menu. The user is greeted with: 
+	 * 1) Create New Account -> an option to create a new profile 
+	 * 2) Login with existing account -> an option to sign in to an already existing profile 
+	 * 3) Quit -> Exit out of the program
+	 * 
+	 * @author Michael Volpi 
+	 * @since 12/13/22
+	 */
 	public int mainMenu(){
 		int choice=-1;
 
@@ -503,45 +505,59 @@ class UserAccount{
 	/**
  	 * Uses the try/catch feature to sign into your account from data on mysocialprofile.txt. If you type in the correc username/password, you will continue to the Main class. 
  	 * If not, you will have to either try again, or make a new account. 
+ 	 * 
+ 	 * It also uses MySocialProfile to create a new profile so that all of the data will be stored there. 
+ 	 * 
  	 * @author Michael Volpi 
- 	 * @since 12/14/2022
+ 	 * @since 12/17/2022
  	 */ 
 	void login(){
-		try{
-			s = new Scanner(System.in);
-			// Path path = Paths.get("mysocialprofile.txt");
-			InputStream input = Files.newInputStream(path);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-			System.out.println("\n**Login To Your Account**\n");
-			System.out.print("Enter your username: ");
-			String username = s.nextLine();
-			System.out.print("Enter password: ");
-			String password = s.nextLine();
-			String temp= null;
-			String user;
-			String pass;
-			boolean found = false; 
-			while((temp = reader.readLine()) != null){
-				String[] account = temp.split(",");
-				user = account[0];
-				pass = account[1];
-				if(user.equals(username) && pass.equals(password)){
-					found = true; 
+	try{
+		s = new Scanner(System.in);
+		InputStream input = Files.newInputStream(path);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+		System.out.println("\n**Login To Your Account**\n");
+		System.out.print("Enter your username: ");
+		String username = s.nextLine();
+		System.out.print("Enter password: ");
+		String password = s.nextLine();
+		String temp= null;
+		String user;
+		String pass;
+		boolean found = false; 
+		MySocialProfile profile = null;
+		while((temp = reader.readLine()) != null){
+			String[] account = temp.split(",");
+			user = account[0];
+			pass = account[1];
+			if(user.equals(username) && pass.equals(password)){
+				found = true; 
+				// Create a new MySocialProfile object and load the data for this user into it
+				profile = new MySocialProfile();
+				profile.name = account[2];
+				profile.email = account[3];
+				profile.password = account[4];
+				profile.year = Integer.parseInt(account[5]);
+				// Load the events for this user
+				for (int i = 6; i < account.length; i += 2) {
+					Event event = new Event(account[i], account[i + 1]);
+					profile.events.addEvent(event);
 				}
+				break;
 			}
-			if (found == true){
-				System.out.println("Welcome!");
-			}else{
-				System.out.println("Invalid username or password. Try again.");
-				new UserAccount();
-			}
-			System.out.println("Press any key to continue...");
-			String proc = s.nextLine();
-	
-		
-
-		}catch(Exception ex){ 
-			System.out.print(ex.getMessage());
+		}
+		if (found == true){
+			System.out.println("Welcome!");
+			// Pass the profile object to the Main class to use
+			Main.profile = profile;
+		}else{
+			System.out.println("Invalid username or password. Try again.");
+			new UserAccount();
+		}
+		System.out.println("Press any key to continue...");
+		String proc = s.nextLine();
+	}catch(Exception ex){ 
+		System.out.print(ex.getMessage());
 		}
 	}
 
@@ -588,84 +604,90 @@ class UserAccount{
 }//closes UserAccount()
 
 
+	/**
+ 	 * Creates a method using a try/catch feature to create a username and password for your account. 
+ 	 * Both your username and password will save to the mysocialprofile.txt file
+ 	 * @author Michael Volpi 
+ 	 * @since 12/14/2022
+ 	 */ 
+	class Main{
+		
+		public static void main(String[]args){
+	    //Event event = new Event(name, date);
+	    UserAccount user = new UserAccount();
+	    MySocialProfile profile = new MySocialProfile(); // initialize profile
+	    Scanner scn = new Scanner(System.in);
 
-class Main{
-	
-	public static void main(String[]args){
-		//Event event = new Event(name, date);
-		UserAccount user = new UserAccount();
-		MySocialProfile profile = new MySocialProfile();
-		Scanner scn = new Scanner(System.in);
+	    boolean run1=true;
+	    boolean run2 = true;
+	    int mainMenuChoice;
+	    String friendEmail;
 
-		boolean run1=true;
-		boolean run2 = true;
-		int mainMenuChoice;
-		String friendEmail;
+	    // System.out.println("Before while loop");
 
-		// System.out.println("Before while loop");
+	    while(run1){
 
-		while(run1){
+	        //starts by calling Main Menu method 
+	        mainMenuChoice = user.mainMenu();
 
-			//starts by calling Main Menu method 
-			mainMenuChoice = user.mainMenu();
+	        // System.out.println(mainMenuChoice + " = mainMenuChoice");
 
-			// System.out.println(mainMenuChoice + " = mainMenuChoice");
+	        //create account
+	        if (mainMenuChoice == 1){
+	            run2=true;
+	            user.createaccount();
+	            // profile = user.getProfile(); // store profile in MySocialProfile object
+	        
+	        //login to existing account
+	        }else if (mainMenuChoice == 2){
+	            run2=true;
+	            user.login();
+	            // profile = user.getProfile(); // store profile in MySocialProfile object
 
-			//create account
-			if (mainMenuChoice == 1){
-				run2=true;
-				user.createaccount();
-				// profile = user.getProfile();
-			
-			//login to existing account
-			}else if (mainMenuChoice == 2){
-				run2=true;
-				user.login();
-
-			//exit program
-			}else if (mainMenuChoice == 3){
-				run2=false;
-				run1=false;
-			
-			}else{
-				System.out.println("Invalid option, please try again.");
-				run2=false;
-				run1=true;
-			}
-
-
-			//homescreen
-			while(run2){
-				System.out.println();
-				System.out.println("\n*next event to take place");
-				profile.printTimeline();
-				System.out.println("*list of all events ");
-
-				System.out.println("\nPlease choose an option.");
-				System.out.println("1. Post to timeline " +
-					"\n2. Add an event." +
-					"\n3. View your list of friends " +
-					"\n4. Add/remove a friend. " +
-					"\n5. Logout. ");
-				int choose = scn.nextInt();
+	        //exit program
+	        }else if (mainMenuChoice == 3){
+	            run2=false;
+	            run1=false;
+	        
+	        }else{
+	            System.out.println("Invalid option, please try again.");
+	            run2=false;
+	            run1=true;
+	        }
 
 
-				switch(choose){
-					//post to timeline
-					case 1:
-						scn = new Scanner(System.in);
-						System.out.println("Please type your new timeline post: ");
-						String post = scn.nextLine();
-						profile.postTimeline(post);
-						run2 = true;
-						break;
+	        //homescreen
+	        while(run2){
+	            System.out.println();
+	            System.out.println("\n*next event to take place");
+	            profile.printTimeline();
+	            System.out.println("*list of all events ");
 
-					//add an event
-					case 2:
-						//prompt the user for the event details 
-						scn = new Scanner(System.in);
-						System.out.print("Enter the name of the event: ");
-						String eventName = scn.nextLine();
+	            System.out.println("\nPlease choose an option.");
+	            System.out.println("1. Post to timeline " +
+	                "\n2. Add an event." +
+	                "\n3. View your list of friends " +
+	                "\n4. Add/remove a friend. " +
+	                "\n5. Logout. ");
+	            int choose = scn.nextInt();
+
+
+	            switch(choose){
+	                //post to timeline
+	                case 1:
+	                    scn = new Scanner(System.in);
+	                    System.out.println("Please type your new timeline post: ");
+	                    String post = scn.nextLine();
+	                    profile.postTimeline(post);
+	                    run2 = true;
+	                    break;
+
+	                //add an event
+	                case 2:
+	                    //prompt the user for the event details 
+	                    scn = new Scanner(System.in);
+	                    System.out.print("Enter the name of the event: ");
+	                    String eventName = scn.nextLine();
 						System.out.print("Enter the date of the event (YYYY-MM-DD");
 						String eventDate = scn.nextLine();
 
@@ -719,3 +741,4 @@ class Main{
 
 }
 
+  
