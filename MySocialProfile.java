@@ -2,6 +2,8 @@ import java.util.Scanner;
 import java.io.*; 
 import java.nio.file.*;
 import java.util.*; 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import static java.nio.file.StandardOpenOption.*; 
 
 /** 
@@ -377,7 +379,7 @@ public class MySocialProfile{
  * @since 12/17/22
  */
 
-public class Event implements Comparable<Event> {
+class Event implements Comparable<Event> {
 	
 	//instance variables for Event object
 	String name;
@@ -411,16 +413,12 @@ public class Event implements Comparable<Event> {
 	public String toString() {
 		return this.name + ": " + this.date;
 	}
-}
 
 /**
- * Class that stores a priority queue of events in order of their dates
+ * stores a priority queue of events in order of their dates
  * @author Matthew Volpi
  * @since 12/17/22
  */
-public class EventQueue {
-	
-	// Priority queue to store events
 	ArrayPriorityQueue events = new ArrayPriorityQueue(100);
 	
 	/**
@@ -444,8 +442,24 @@ public class EventQueue {
 		}
 	}
 	
-}//close Event
-
+	/**
+	 * Creates a new event with the current date and adds it to the priority queue
+	 * @param name -> the name of the event
+	 * @author Matthew Volpi 
+	 * @since 12/17/22
+	 */
+	public void createNewEvent(String name) {
+		// Get current date
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd");
+		LocalDate localDate = LocalDate.now();
+		String date = dtf.format(localDate);
+		
+		// Create new event and add it to the queue
+		Event event = new Event(name, date);
+		addEvent(event);
+	}
+	
+}//close Event class
 
 class UserAccount{
 	Scanner s = new Scanner(System.in); 
@@ -646,10 +660,11 @@ class Main{
 					//add an event
 					case 2:
 						//prompt the user for the event details 
+						scn = new Scanner(System.in);
 						System.out.print("Enter the name of the event: ");
-						String eventName = input.nextLine();
+						String eventName = scn.nextLine();
 						System.out.print("Enter the date of the event (YYYY-MM-DD");
-						String eventDate = input.nextLine();
+						String eventDate = scn.nextLine();
 
 						//Creates a new event object with the user-provided details 
 						Event newEvent = new Event(eventName, eventDate);
