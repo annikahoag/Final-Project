@@ -21,7 +21,7 @@ public class ArrayPriorityQueue {
 		return A[1];
 	}
 
-	public void insert(int k) {
+	public void insert(Event k) {
 		A[n+1] = k;
 		n++;
 		int cIndex = n;
