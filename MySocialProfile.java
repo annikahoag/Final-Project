@@ -13,6 +13,7 @@ import static java.nio.file.StandardOpenOption.*;
 */
 public class MySocialProfile{
 	
+	
 	//instance variables for MySocialProfile object
 	String name, email, password;
 	int year;
@@ -21,6 +22,10 @@ public class MySocialProfile{
 	String [] timelinePosts = new String[3]; //array to store queue of timeline posts
 	int numTimeline	= 0; 	//count of number of timeline posts
 	int front = 0; 			//index of front of queue holding the timeline posts, oldest timeline post
+
+	//stores a priority queue of events in order of their dates
+	//Uses ArrayPriorityQueue class, modified version of Professor Tarimo's 
+	ArrayPriorityQueue events = new ArrayPriorityQueue(100);
 
 	String [] friends = new String[50]; //array to store list of friends
 	int numFriends = 0; //size of friends array
@@ -177,22 +182,22 @@ public class MySocialProfile{
 			 */ 
 			boolean found = this.find(friendEmail, 0, numFriends-1);
 
-			/**
-			 * Uses instance variable mid to store index where friendEmail was found, or where it belongs
-			 * Mid will need to be increased by 1 unless mid=0 or is less than the current email at index 0
-			 * If mid=0 then the new email should only go at 0 if it's less than the current email at index 0
-			 */ 
-			if(mid!=0 || friendEmail.compareTo(friends[mid])>0){
-				mid++;
-			}
-
 
 			//if email isn't found, add to friends[]
 			if (!found){
+				/**
+				 * Uses instance variable mid to store index where friendEmail was found, or where it belongs
+				 * Mid will need to be increased by 1 unless mid=0 or is less than the current email at index 0
+				 * If mid=0 then the new email should only go at 0 if it's less than the current email at index 0
+				 */ 
+				if(mid!=0 || friendEmail.compareTo(friends[mid])>0){
+					mid++;
+				}
 				this.addFriend(friendEmail);
 
 			//otherwise removed email	
 			}else{
+				//no need to increase mid under any conditions b/c we know that friendEmail is stored there if found
 				this.removeFriend(friendEmail);
 			}
 
@@ -203,6 +208,7 @@ public class MySocialProfile{
 		}
 
 	}//closes addOrRemove
+
 
 	/**
 	 * Adds friend's email to friends[]
@@ -237,13 +243,17 @@ public class MySocialProfile{
 		}//closes if 
 
 
-
 		/**
-		 * Use helper method to shift values and make room for new email,
-		 * 	unless there's no other values in friends[] or the value goes at the end
+		 * Shift all values in friends[] from numFriends to mid
+		 * 	 unless there's no other values in friends[] or the value goes at the end
+ 	 	 * This allows a new value to be inserted into friends[] following alphabetical order
 		 */ 
 		if (numFriends>=1 && mid != numFriends){
-			this.shift();
+			for (int i = numFriends; i>mid; i--){
+				friends[i] = friends[i-1];
+				System.out.println("This is the array when i=" + "i");
+				this.displayFriends();
+			} 
 		}
 
 		//Store friend's email at mid, increase numFriends
@@ -256,27 +266,12 @@ public class MySocialProfile{
 	//method to remove friend
 	private void removeFriend(String friendEmail){
 
-		for (int i = mid; i < numFriends; i++){
+		for (int i = mid; i <= numFriends; i++){
 
 			friends[i] = friends [i+1];
 
 		}
-
 		numFriends--;
-
-
-		// int foundIndex = this.find(friendEmail, 0, numFriends+1);
-
-		//NEED TO SHIFT VALUES AND REMOVE ONCE THE VALUE HAS BEEN REMOVED 
-		
-		// boolean found = this.find(friendEmail);
-
-		// if (!found){
-		// 	System.out.println("Friend could not be found in the list.");
-		// }else{
-
-		// }
-
 	}
 
 
@@ -328,18 +323,54 @@ public class MySocialProfile{
 
 
  	/**
- 	 * Helper method to shift all values in friends[] from numFriends to mid
- 	 * This allows a new value to be inserted into friends[] following alphabetical order
- 	 * @author Annika Hoag
- 	 * @since 12/14/2022
- 	 */ 
- 	private void shift(){
-		
-		for (int i = numFriends; i>mid; i--){
-			friends[i] = friends[i-1];
-		} 		
+	 * Adds a new event to the priority queue of events
+	 * @param event -> the event to be added
+	 * @author Matthew Volpi 
+	 * @since 12/17/22
+	 */ 
+	public void addEvent(Event event) {
+		events.insert(event);
+	}
 
- 	}
+
+	/**
+	 * Prints the events in the priority queue in order of date
+	 * @author Matthew Volpi 
+	 * @since 12/17/22
+	 */
+	public void displayEvents() {
+		
+		//Get the current date 
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd");
+		LocalDate currentDate = LocalDate.now();
+		String currentDateString = dtf.format(currentDate);
+
+		//Loop through the events in the priority queue
+		while (!events.isEmpty()){
+			Event event = events.extractMin();
+			if (!event.expirationDate.equals(currentDateString)){
+				System.out.print(event);
+			}
+		}
+	} 
+
+
+	/**
+	 * Creates a new event with the current date and adds it to the priority queue
+	 * @param name -> the name of the event
+	 * @author Matthew Volpi 
+	 * @since 12/17/22
+	 */
+	public void createNewEvent(String name) {
+		// Get current date
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd");
+		LocalDate localDate = LocalDate.now();
+		String date = dtf.format(localDate);
+		
+		// Create new event and add it to the queue
+		addEvent(event);
+	}
+
 
  	// public String[] getFriends(){
  	// 	return friends;
@@ -378,7 +409,6 @@ public class MySocialProfile{
  * @author Matthew Volpi 
  * @since 12/17/22
  */
-
 class Event implements Comparable<Event> {
 	
 	//instance variables for Event object
@@ -413,62 +443,9 @@ class Event implements Comparable<Event> {
 	public String toString() {
 		return this.name + ": " + this.date;
 	}
-
-/**
- * stores a priority queue of events in order of their dates
- * @author Matthew Volpi
- * @since 12/17/22
- */
-	ArrayPriorityQueue events = new ArrayPriorityQueue(100);
-	
-	/**
-	 * Adds a new event to the priority queue of events
-	 * @param event -> the event to be added
-	 * @author Matthew Volpi 
-	 * @since 12/17/22
-	 */ 
-	public void addEvent(Event event) {
-		events.insert(event);
-	}
-	
-	/**
-	 * Prints the events in the priority queue in order of date
-	 * @author Matthew Volpi 
-	 * @since 12/17/22
-	 */
-	public void displayEvents() {
-		
-		//Get the current date 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd");
-		LocalDate currentDate = LocalDate.now();
-		String currentDateString = dtf.format(currentDate);
-
-		//Loop through the events in the priority queue
-		while (!events.isEmpty()){
-			Event event = events.extractMin();
-			if (!event.expirationDate.equals(currentDateString)){
-				System.out.print(event);
-			}
-		}
-	} 
-	
-	/**
-	 * Creates a new event with the current date and adds it to the priority queue
-	 * @param name -> the name of the event
-	 * @author Matthew Volpi 
-	 * @since 12/17/22
-	 */
-	public void createNewEvent(String name) {
-		// Get current date
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd");
-		LocalDate localDate = LocalDate.now();
-		String date = dtf.format(localDate);
-		
-		// Create new event and add it to the queue
-		addEvent(event);
-	}
 	
 }//close Event class
+
 
 class UserAccount{
 	Scanner s = new Scanner(System.in); 
@@ -570,16 +547,16 @@ class UserAccount{
 			OutputStream output = new BufferedOutputStream(Files.newOutputStream(path, APPEND));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
 			System.out.println("\n**Create A New Account**\n");
-			System.out.print("Enter your username: ");
-			String username = s.nextLine();
+			System.out.print("Enter your full name: ");
+			String name = s.nextLine();
 			System.out.print("Enter password: ");
 			String password = s.nextLine();
-			System.out.println("Enter your classyear: ");
+			System.out.println("Enter your class year: ");
 			String classyear = s.nextLine();
-			System.out.println("Enter your email: ")
+			System.out.println("Enter your email: ");
 			String email = s.nextLine(); 
 
-			writer.write(username + "," + password + "," + classyear + "," + email);
+			writer.write(name + "," + password + "," + classyear + "," + email);
 			writer.newLine();
 			System.out.println("Account has been successfully created!");
 			writer.close();
@@ -731,4 +708,3 @@ class Main{
 }
 
   
-
