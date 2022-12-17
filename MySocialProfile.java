@@ -437,10 +437,20 @@ class Event implements Comparable<Event> {
 	 * @since 12/17/22
 	 */
 	public void displayEvents() {
-		while (!events.isEmpty()) {
-			System.out.println(events.extractMin());
+		
+		//Get the current date 
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd");
+		LocalDate currentDate = LocalDate.now();
+		String currentDateString = dtf.format(currentDate);
+
+		//Loop through the events in the priority queue
+		while (!events.isEmpty()){
+			Event event = events.extractMin();
+			if (!event.expirationDate.equals(currentDateString)){
+				System.out.print(event);
+			}
 		}
-	}
+	} 
 	
 	/**
 	 * Creates a new event with the current date and adds it to the priority queue
@@ -455,7 +465,6 @@ class Event implements Comparable<Event> {
 		String date = dtf.format(localDate);
 		
 		// Create new event and add it to the queue
-		Event event = new Event(name, date);
 		addEvent(event);
 	}
 	
@@ -565,8 +574,12 @@ class UserAccount{
 			String username = s.nextLine();
 			System.out.print("Enter password: ");
 			String password = s.nextLine();
+			System.out.println("Enter your classyear: ");
+			String classyear = s.nextLine();
+			System.out.println("Enter your email: ")
+			String email = s.nextLine(); 
 
-			writer.write(username + "," + password);
+			writer.write(username + "," + password + "," + classyear + "," + email);
 			writer.newLine();
 			System.out.println("Account has been successfully created!");
 			writer.close();
@@ -590,6 +603,7 @@ class UserAccount{
 class Main{
 	
 	public static void main(String[]args){
+		//Event event = new Event(name, date);
 		UserAccount user = new UserAccount();
 		MySocialProfile profile = new MySocialProfile();
 		Scanner scn = new Scanner(System.in);
@@ -717,5 +731,4 @@ class Main{
 }
 
   
-
 
