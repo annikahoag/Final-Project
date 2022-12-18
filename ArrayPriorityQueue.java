@@ -1,11 +1,11 @@
 import java.io.*;
 
 public class ArrayPriorityQueue {
-	int[] A;
+	Event[] A;
 	int n;
 
 	public ArrayPriorityQueue(int capacity) {
-		A = new int[capacity];
+		A = new Event[capacity];
 		n = 0;
 	}
 
@@ -17,7 +17,7 @@ public class ArrayPriorityQueue {
 		return n == 0;
 	}
 
-	public int getMin() {
+	public Event getMin() {
 		return A[1];
 	}
 
@@ -27,14 +27,15 @@ public class ArrayPriorityQueue {
 		int cIndex = n;
 		int pIndex = parentIndex(n);
 		//while child is not root and child is smaller than parent
-		while (pIndex >= 1 && A[cIndex] < A[pIndex]) {
+		//smaller is found using compareTo method in Events()
+		while (pIndex >= 1 && A[cIndex].compareTo(A[pIndex]) < 0) {
 			swap(cIndex,pIndex);
 			cIndex = pIndex;
 			pIndex = parentIndex(cIndex);
 		}
 	}
 
-	public int extractMin() {
+	public Event extractMin() {
 		swap(1,n);
 		n--;
 		int pIndex = 1;
@@ -49,7 +50,7 @@ public class ArrayPriorityQueue {
 				pIndex = lCIndex;
 			}
 			else { //Two children, swap with the smaller child
-				if (A[lCIndex] < A[rCIndex]) {
+				if (A[lCIndex].compareTo(A[rCIndex]) < 0 ){
 					swap(pIndex,lCIndex);
 					pIndex = lCIndex;
 				}
@@ -75,7 +76,7 @@ public class ArrayPriorityQueue {
 	}
 
 	private void swap(int pIndex, int cIndex) {
-		int temp = A[cIndex];
+		Event temp = A[cIndex];
 		A[cIndex] = A[pIndex];
 		A[pIndex] = temp;
 	}
@@ -83,12 +84,38 @@ public class ArrayPriorityQueue {
 	private boolean hasSmallerChild(int pIndex) {
 		int rCIndex = rightChildIndex(pIndex);
 		int lCIndex = leftChildIndex(pIndex);
-		if (rCIndex <= n && A[rCIndex] < A[pIndex])
+		if (rCIndex <= n && A[rCIndex].compareTo(A[pIndex]) < 0)
 			return true;
-		else if (lCIndex <= n && A[lCIndex] < A[pIndex])
+		else if (lCIndex <= n && A[lCIndex].compareTo(A[pIndex]) < 0)
 			return true;
 		else
 			return false;
 	}
-		
+
+	
+	public String getElement(int i){
+		return A[i].toString();
+	}
+
+	public String toString(){
+		// if (isEmpty()){
+			String s = "";
+			for(int i=1; i<n; i++){
+				s = s + " " + this.getElement(i);
+			}
+			return s;
+		// }else{
+		// 	return null;
+		// }
+	}
+
+	public void display(){
+		for (int i=1; i<n; i++){
+			System.out.print(A[i].toString() + ", ");
+		}
+	}
+
+	// public boolean 
+
+
 }
