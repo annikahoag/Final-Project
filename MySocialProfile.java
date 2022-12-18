@@ -7,31 +7,33 @@ import java.time.format.DateTimeFormatter;
 import static java.nio.file.StandardOpenOption.*; 
 
 /** 
-* Class that stores objects representing a user's profile, as on a social media site.
+* Class that stores various variables that represent a user's profile, as on a social media site.
+* Used by User Class so that user input can be stored as a MySocialProfile object.
+* Used by Main Class so that various methods/operations can be completed. 
 * @author Annika Hoag, Matthew Volpi, and Michael Volpi
 * @since 12/7/2022
 */
 public class MySocialProfile{
 	
-	
-	//instance variables for MySocialProfile object
-	String name, email, password;
-	int year;
-	//add events
+	//instance variables that define MySocialProfile object 
+	String name, email, password, year;
 
 	String [] timelinePosts = new String[3]; //array to store queue of timeline posts
 	int numTimeline	= 0; 	//count of number of timeline posts
-	int front = 0; 			//index of front of queue holding the timeline posts, oldest timeline post
+	int front = 0; 			//index of front of timeline posts queue, index of oldest timeline post
 
-	//stores a priority queue of events in order of their dates
-	//Uses ArrayPriorityQueue class, modified version of Professor Tarimo's 
+	/**
+	 * Stores a priority queue of events in order of their dates
+	 * Uses ArrayPriorityQueue class that is a modified version of Professor Tarimo's 
+	 */ 
 	ArrayPriorityQueue events = new ArrayPriorityQueue(100);
 
 	String [] friends = new String[50]; //array to store list of friends
 	int numFriends = 0; //size of friends array
-	int mid; //stores value of mid in binary search
+	int mid; //stores index of middle value in binary search, used throughout class which is why it's an instance variable
 
-	//constructor 
+
+	//Default constructor 
 	public MySocialProfile(){ }
 
 	/**
@@ -43,7 +45,7 @@ public class MySocialProfile{
 	 * @author Annika Hoag
 	 * @since 12/7/2022
 	 */ 
-	public MySocialProfile(String name, String email, String password, int year){
+	public MySocialProfile(String name, String email, String password, String year){
 		name = name;
 		email = email;
 		password = password;
@@ -57,15 +59,14 @@ public class MySocialProfile{
 	 * @since 12/8/2022
 	 */
 	public void printTimeline(){
-		System.out.println();
-
+	
 		//only print posts if the array is not empty
 		if (numTimeline>0){
 
 			/**
-			 * arrIndex is the index that goes through the array
+			 * arrIndex is the index that we use to go through the array
 			 * printCount is the number of posts that have already been printed
-			 * this allows us to loop through the array starting at the front of the queue,
+			 * This allows us to loop through the array starting at the front of the queue,
 			 * 	and ending at the rear while also making sure not to print any null values.
 			 */ 
 			int arrIndex = front;		
@@ -93,15 +94,14 @@ public class MySocialProfile{
 			System.out.println("You have no timeline posts yet! Click 1 to post on your timeline!");
 		}
 
-		System.out.println();
-	}
+	}//closes printTimeline
 
 
 	/**
 	 * Adds a new post to the queue of posts, represented by an array
 	 * Chose to use a queue b/c we only need to display 3 posts at a time,
-	 * 	so we have no use for the oldest post once a new one is added.
-	 * Dequeues every time a new post is added (if array is not empty), and then enqueues new post
+	 * 	this means we have no use for the oldest post once a new one is added.
+	 * Dequeues if array is at capacity of size 3, and then enqueues new post each time.
 	 * @param post -> the user input storing the new post
 	 * @author Annika Hoag
 	 * @since 12/8/2022
@@ -118,7 +118,7 @@ public class MySocialProfile{
 	
 	/** 
 	 * Helper method to remove the first element of the queue
-	 * Chose to not have this method return anything b/c we have no need to remember old timeline posts 
+	 * Chose to not have this method not return anything b/c we have no need to remember old timeline posts 
 	 * Modified from dequeue method we received from Prof. Tarimo
 	 * @author Annika Hoag
 	 * @since 12/8/2022
@@ -138,7 +138,7 @@ public class MySocialProfile{
 	 * @since 12/8/2022
 	 */ 
 	private void enqueue(String post) {
-		int rearIndex = (front+numTimeline)%timelinePosts.length;	//Use modular arithmetic
+		int rearIndex = (front+numTimeline)%timelinePosts.length;	//Use modular arithmetic to find rearIndex
 		timelinePosts[rearIndex] = post;		//store new post at rearIndex
 		numTimeline++;        					//increase number of posts
 	}
@@ -146,18 +146,23 @@ public class MySocialProfile{
 
 	/**
 	 * Displays the user's list of friends
-	 * @author Annika Hoag using a method from the SinglyLinkedList class provided by Prof. Tarimo
+	 * @author Annika Hoag
 	 * @since 12/13/2022
 	 */  
 	public void displayFriends (){
 		System.out.println();
 
+		//if friends[] isn't empty..
 		if (numFriends != 0){
 
+			//print all friends, friends[] is already sorted
 			for (int i=0; i < numFriends; i++){
 				System.out.print(friends[i] + ", ");
 			}
 
+		//if empty, print message to inform user
+		}else{
+			System.out.println("You have not added any friends yet, click 4 to add a friend!");
 		}
 		System.out.println();
 	} 
@@ -165,7 +170,8 @@ public class MySocialProfile{
 
 	/**
 	 * Decides whether to add or remove the given friend's email ID
-	 * Also changes instance variable mid as needed to indicate where email belongs or already is
+	 * Uses instance variable mid to determine this
+	 * Also mid as needed to indicate where email belongs 
 	 * @param friendEmail -> email ID inputted by user that will  either be added or removed
 	 * @author Annika Hoag
 	 * @since 12/13/2022
@@ -179,6 +185,7 @@ public class MySocialProfile{
 			 * Check if friendEmail is already in friends[] using helper method
 			 * If found=true, remove that email from friends[],
 			 * 	else add that email to friends[]
+			 * Uses mid variable calculated in find() to determine where email is or should go
 			 */ 
 			boolean found = this.find(friendEmail, 0, numFriends-1);
 
@@ -186,23 +193,24 @@ public class MySocialProfile{
 			//if email isn't found, add to friends[]
 			if (!found){
 				/**
-				 * Uses instance variable mid to store index where friendEmail was found, or where it belongs
-				 * Mid will need to be increased by 1 unless mid=0 or is less than the current email at index 0
-				 * If mid=0 then the new email should only go at 0 if it's less than the current email at index 0
+				 * Mid will need to be increased by 1 unless mid=0 or is less than the current email at index 0, 
+				 * 	b/c if mid=0 then the new email should only go at 0 if it's less than the current email at index 0
 				 */ 
 				if(mid!=0 || friendEmail.compareTo(friends[mid])>0){
 					mid++;
 				}
+
+				//use helper method to add friend
 				this.addFriend(friendEmail);
 
-			//otherwise removed email	
+			//otherwise remove email	
 			}else{
 				//no need to increase mid under any conditions b/c we know that friendEmail is stored there if found
 				this.removeFriend(friendEmail);
 			}
 
 
-		//if empty no need to see if email is already in friends[]
+		//if empty no need to see if email is already in friends[], just add 
 		}else{
 			this.addFriend(friendEmail);
 		}
@@ -213,11 +221,11 @@ public class MySocialProfile{
 	/**
 	 * Adds friend's email to friends[]
 	 * Creates a sorted array from A-Z, in order for it to be possible to do binary search
-	 * @param friendEmail -> email ID of the friend to be added the list
+	 * @param friendEmail -> email ID of the friend to be added to the list
 	 * @author Annika Hoag
 	 * @since 12/13/2022
 	 */ 
-	private void addFriend(String friendEmail){
+	public void addFriend(String friendEmail){
 
 		//If the array is at capacity, we must resize it
 		if (numFriends >= friends.length){
@@ -246,13 +254,12 @@ public class MySocialProfile{
 		/**
 		 * Shift all values in friends[] from numFriends to mid
 		 * 	 unless there's no other values in friends[] or the value goes at the end
- 	 	 * This allows a new value to be inserted into friends[] following alphabetical order
+ 	 	 * Using mid as the stopping point allows a new value to be inserted into friends[] following alphabetical order 
 		 */ 
 		if (numFriends>=1 && mid != numFriends){
 			for (int i = numFriends; i>mid; i--){
 				friends[i] = friends[i-1];
-				System.out.println("This is the array when i=" + "i");
-				this.displayFriends();
+				
 			} 
 		}
 
@@ -263,14 +270,24 @@ public class MySocialProfile{
 	}//closes addFriend
 
 
-	//method to remove friend
+
+	/**
+	 * Removes friend's email from friends[]
+	 * @param friendEmail -> email ID of the friend to be removed from the list
+	 * @author Annika Hoag
+	 * @since 12/14/2022
+	 */ 
 	private void removeFriend(String friendEmail){
 
+		//Shift all values in friends[] from mid to numFriends so that friendEmail will get replaced
 		for (int i = mid; i <= numFriends; i++){
-
 			friends[i] = friends [i+1];
-
 		}
+		
+		/** 
+		 * Decreasing numFriends makes it unnecessary to make the last value in friends[] (which is now in 2 spots) null,
+		 * 	since no displays will ever make it to that point and it will get replaced if necessary
+		 */ 
 		numFriends--;
 	}
 
@@ -323,142 +340,296 @@ public class MySocialProfile{
 
 
  	/**
-	 * Adds a new event to the priority queue of events
+	 * Adds a new event to the priority queue of events 
 	 * @param event -> the event to be added
-	 * @author Matthew Volpi 
+	 * @author Matthew Volpi and Annika Hoag
 	 * @since 12/17/22
 	 */ 
 	public void addEvent(Event event) {
-		events.insert(event);
-	}
+		/**
+		 * first test if the entered date has passed using helper method
+		 * if it hasn't passed we add the Even to the priority queue
+		 */ 
+		if (!this.datePast(event.getDate()) ){
+			events.insert(event);
+
+		//otherwise print error message	to inform user date has passed 
+		}else{
+			System.out.println("Error, this date has already passed");
+		}	
+
+	}//closes addEvent
 
 
 	/**
 	 * Prints the events in the priority queue in order of date
-	 * @author Matthew Volpi 
+	 * @author Matthew Volpi and Annika Hoag
 	 * @since 12/17/22
 	 */
 	public void displayEvents() {
 		
-		//Get the current date 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd");
-		LocalDate currentDate = LocalDate.now();
-		String currentDateString = dtf.format(currentDate);
+		//only print if the priority queue isn't empty
+		if (!events.isEmpty()){
 
-		//Loop through the events in the priority queue
-		while (!events.isEmpty()){
-			Event event = events.extractMin();
-			if (!event.expirationDate.equals(currentDateString)){
-				System.out.print(event);
-			}
+			int i=1;
+
+			//loop through priority queue starting at root (index 1) until i>size
+			while (i<=events.size()){
+
+				//only print event if the date hasn't passed using helper method
+				if (!this.datePast(events.getElement(i)) ){
+					System.out.println(events.getElement(i));
+
+				//otherwise delete the min value (if date has passed it must be the newest)	
+				}else{
+					events.extractMin();
+				}
+				
+				i++;
+
+			}//close while loop
+		
+		
+		//if empty print message to inform user
+		}else{
+			System.out.println("You don't have any events yet! Click 2 to add an event!");
 		}
-	} 
+	
+	}//closes displayEvents 
 
 
 	/**
-	 * Creates a new event with the current date and adds it to the priority queue
-	 * @param name -> the name of the event
-	 * @author Matthew Volpi 
-	 * @since 12/17/22
-	 */
-	public void createNewEvent(String name) {
-		// Get current date
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd");
-		LocalDate localDate = LocalDate.now();
-		String date = dtf.format(localDate);
-		
-		// Create new event and add it to the queue
-		addEvent(event);
+	 * Prints the next event using helper method to determine if the next event has passed
+	 * Next event is represented as the min value of priority queue b/c that's the soonest date
+	 * @author Annika Hoag
+	 * @since 12/17/2022
+	 */ 
+	public void displayNextEvent(){
+
+		//only print if the priority queue isn't empty and the minimum date hasn't passed
+		if (!events.isEmpty() && !this.datePast(events.getMin().getDate()) ){
+			System.out.println(events.getMin().toString());
+
+
+		}else{
+
+			//NOTE: there is a bug here when it comes to evaluating a date that's passed by a minute or hour
+			//remove the minimum value as long the date has passed and the priority queue isn't empty
+			while(!events.isEmpty() && this.datePast(events.getMin().getDate()) ){
+				events.extractMin();
+			}
+
+			//if after this the queue is still not empty then print the min
+			if (!events.isEmpty()){
+				System.out.println(events.getMin().toString());
+			}
+		}
+
+	}//closes displayNextEvent
+
+
+	/**
+	 * Helper method to figure out if the given date has passed using Calendar objects
+	 * @param dateAndTime -> date to be compared to current date
+	 * @return true if given date has passed, false is the given date hasn't passed
+	 * @author Matthew Volpi and Annika Hoag
+	 * @since 12/16/2022
+	 */ 
+	private boolean datePast(String dateAndTime){
+		//create Calendar object to store the date and time 
+		Calendar userCal = Calendar.getInstance();
+
+		//store each piece of the give date as a substring 
+		int year = Integer.valueOf(dateAndTime.substring(0,4));
+		int month = Integer.valueOf(dateAndTime.substring(5,7));
+		int day = Integer.valueOf(dateAndTime.substring(8,10));
+		int hour = Integer.valueOf(dateAndTime.substring(11,13));
+		int min = Integer.valueOf(dateAndTime.substring(14,16));
+
+		//set substrings to parameters of Calendar object
+		userCal.set(year, month-1, day, hour, min);
+
+		//use Calendar to store the current date
+		Calendar currentDate = Calendar.getInstance();
+
+		/**
+		 * If there are more milliseconds since the currentDate that means more time has passed compared to given date
+		 * This means that the given date has already happened
+		 */  
+		if (currentDate.getTimeInMillis() > userCal.getTimeInMillis()){
+			return true;
+		}else{
+			return false;
+		}
+
 	}
 
 
- 	// public String[] getFriends(){
- 	// 	return friends;
- 	// }
+	/** 
+	 * Return name of MySocialProfile object
+	 * @return name -> instance variable storing user's name
+	 * @author Annika Hoag 
+	 * @since 12/17/2022
+	 */ 
+	public String getName(){
+		return name;
+	}
 
-//NOT SURE IF I WILL NEED THESE SO THEYRE JUST COMMENTED OUT FOR NOW
-	// public void setName(String n){
-	// 	name = n;
-	// }
+	/** 
+	 * Return email of MySocialProfile object
+	 * @return email -> instance variable storing user's email
+	 * @author Annika Hoag 
+	 * @since 12/17/2022
+	 */ 
+	public String getEmail(){
+		return email;
+	}
 
-	// public void setPassword(String p){
-	// 	password = p;
-	// }
+	/** 
+	 * Return password of MySocialProfile object
+	 * @return password -> instance variable storing user's password
+	 * @author Annika Hoag 
+	 * @since 12/17/2022
+	 */ 
+	public String getPassword(){
+		return password;
+	}
 
-	// public void setEmail(String e){
-	// 	email = e;
-	// }
+	/** 
+	 * Return class year of MySocialProfile object
+	 * @return year -> instance variable storing user's class year
+	 * @author Annika Hoag 
+	 * @since 12/17/2022
+	 */ 
+	public String getYear(){
+		return year;
+	}
 
-	// public void setYear(int y){
-	// 	year = y;
-	// }
+	/** 
+	 * Return list of events of MySocialProfile object
+	 * @return String representation of Events priority queue
+	 * @author Annika Hoag 
+	 * @since 12/17/2022
+	 */ 
+	public String getEvents(){
+		return events.toString();
+	}
 
-	// public void setTimelinePosts(String s1, String s2, String s3){
+	/** 
+	 * Return list of timeline posts of MySocialProfile object
+	 * @return String containing all of the timelinePosts separated by a comma
+	 * @author Annika Hoag 
+	 * @since 12/17/2022
+	 */ 
+	public String getTimeline(){
+		String timeline="";
 
-	// 	this.postTimeline(s1);
-	// 	this.postTimeline(s2);
-	// 	this.postTimeline(s3);
+		for (int i=0; i<numTimeline; i++){
+			timeline = timeline + "," + timelinePosts[i];
+		}
+		return timeline;
+	}
 
-	// }
+	/** 
+	 * Return list of friends of MySocialProfile object
+	 * @return String containing all of the friends' emails separated by a comma
+	 * @author Annika Hoag 
+	 * @since 12/17/2022
+	 */ 
+	public String getFriends(){
+		String friendString="";
+
+		for (int i=0; i<numFriends; i++){
+			friendString = friendString + "," + friends[i];
+		}
+		return friendString;
+	}
 
 }//close MySocialProfile
 
 
+
 /**
- * Class that represents an event, with a name and date
- * @author Matthew Volpi 
+ * Class that represents an event, with a name and date/time.
+ * Used by MySocialProfile class to hold priority queue of objects of this class.
+ * Used by User class so that events can be stored in the text file.
+ * Used by Main class so that methods in MySocialProfile can be called with user input.
+ * @author Matthew Volpi, Michael Volpi, and Annika Hoag 
  * @since 12/17/22
  */
-class Event implements Comparable<Event> {
+	class Event{
 	
-	//instance variables for Event object
-	String name;
-	String date;
+	//Instance variables for Event object
+	String name, dateAndTime;
 	
-	//constructor
-	public Event(String name, String date) {
-		this.name = name;
-		this.date = date;
+	/** 
+	 * Constructor for Event object
+	 * @param n -> name of event
+	 * @param date -> date/time of event
+	 * @author Matthew Volpi, Michael Volpi, and Annika Hoag
+	 * @since 12/17/22
+	 */ 
+	public Event(String n, String date){
+		name = n;
+		dateAndTime = date;
 	}
 	
 	/**
-	 * Compares this event to another event based on their dates
+	 * Compares one event to another event based on their dates, similar to String compareTo
 	 * @param other -> the other event to compare to
-	 * @return a negative integer if this event's date is earlier, 0 if the dates are the same, or a positive integer if this event's date is later
-	 * @author Matthew Volpi + Michael Volpi 
+	 * @return a negative integer if this event's date is earlier, 
+	 * 	0 if the dates are the same,
+	 *  or a positive integer if this event's date is later
+	 * @author Matthew Volpi, Michael Volpi 
 	 * @since 12/17/22
 	 */
-	@Override
 	public int compareTo(Event other) {
-		return this.date.compareTo(other.date);
+		return dateAndTime.compareTo(other.getDate());
 	}
 	
 	/**
-	 * Returns a string representation of this event
-	 * @return the name and date of this event
+	 * Converts Event to String
+	 * @return String representation of this event
 	 * @author Matthew Volpi 
 	 * @since 12/17/22
 	 */
-	@Override
 	public String toString() {
-		return this.name + ": " + this.date;
+		return dateAndTime + " " + name;
+	}
+
+	/**
+	 * Return date/time of Event
+	 * @return dateAndTime -> instance variable storing date and time of event
+	 * @author Annika Hoag
+	 * @since 12/17/2022
+	 */  
+	public String getDate(){
+		return dateAndTime;
 	}
 	
+
 }//close Event class
 
 
-	/**
-	 * Class that creates the user's profile/account 
-	 * @author Michael Volpi 
-	 * @since 12/17/22
-	 */
-
+/**
+ * Class that interacts with an outside text file (mysocialprofile.txt) to store profile information
+ * Interacts with MySocialProfile to get data that needs to go into text file and/or give data to MySocialProfile from file
+ * Main class calls these methods depending on user input
+ * @author Matthew Volpi, Michael Volpi, and Annika Hoag 
+ * @since 12/17/22
+ */
 class UserAccount{
+	//instance variables
 	Scanner s = new Scanner(System.in); 
-	// Main runmain = new Main();
 	Path path;
+	MySocialProfile profile = new MySocialProfile();
 	String filename = "mysocialprofile.txt"; 
 	
+	/**
+	 * Constructs a new UserAccount object
+	 * @author Michael Volpi
+	 * @since 12/17/2022
+	 */ 
 	public UserAccount(){
 		path = Paths.get("mysocialprofile.txt");
 	} 
@@ -477,23 +648,14 @@ class UserAccount{
 		int choice=-1;
 
 		try{ 
-			System.out.println("-------------------------------");
-			System.out.println("1. Create New Account");
+			s = new Scanner(System.in);
+			System.out.println("\n-------------------------------");
+			System.out.println("1. Create a new account");
 			System.out.println("2. Login with existing account");
-			System.out.println("3. Quit");
+			System.out.println("3. Exit program");
 			System.out.println("-------------------------------");
 			System.out.print("Enter Your Choice: ");
 			choice = s.nextInt();
-			// if(choice.equals("1")){
-			// 	createaccount();
-			// }else if(choice.equals("2")){
-			// 	login();
-			// }else if(choice.equals("3")){
-			// 	System.exit(0);
-			// }else{
-			// 	System.out.print("Invalid option.\n");
-			// 	new UserAccount();
-			// }
 		}catch(Exception ex){ 
 			choice=-1;
 		}
@@ -503,61 +665,77 @@ class UserAccount{
 
 
 	/**
- 	 * Uses the try/catch feature to sign into your account from data on mysocialprofile.txt. If you type in the correc username/password, you will continue to the Main class. 
+ 	 * Uses the try/catch feature to sign into your account from data on mysocialprofile.txt. 
+ 	 * If you type in the correct username/password, you will continue to the Main class. 
  	 * If not, you will have to either try again, or make a new account. 
- 	 * 
  	 * It also uses MySocialProfile to create a new profile so that all of the data will be stored there. 
- 	 * 
  	 * @author Michael Volpi 
  	 * @since 12/17/2022
  	 */ 
 	void login(){
-	try{
-		s = new Scanner(System.in);
-		InputStream input = Files.newInputStream(path);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-		System.out.println("\n**Login To Your Account**\n");
-		System.out.print("Enter your username: ");
-		String username = s.nextLine();
-		System.out.print("Enter password: ");
-		String password = s.nextLine();
-		String temp= null;
-		String user;
-		String pass;
-		boolean found = false; 
-		MySocialProfile profile = null;
-		while((temp = reader.readLine()) != null){
-			String[] account = temp.split(",");
-			user = account[0];
-			pass = account[1];
-			if(user.equals(username) && pass.equals(password)){
-				found = true; 
-				// Create a new MySocialProfile object and load the data for this user into it
-				profile = new MySocialProfile();
-				profile.name = account[2];
-				profile.email = account[3];
-				profile.password = account[4];
-				profile.year = Integer.parseInt(account[5]);
-				// Load the events for this user
-				for (int i = 6; i < account.length; i += 2) {
-					Event event = new Event(account[i], account[i + 1]);
-					profile.events.addEvent(event);
+		try{
+			s = new Scanner(System.in);
+			InputStream input = Files.newInputStream(path);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+			System.out.println("\n**Login To Your Account**\n");
+			System.out.print("Enter your email address: ");
+			String emailID = s.nextLine();
+			System.out.print("Enter password: ");
+			String password = s.nextLine();
+			
+			String temp= null;
+			String email;
+			String pass;
+			boolean found = false; 
+			// MySocialProfile profile = null;
+			while((temp = reader.readLine()) != null){
+				String[] account = temp.split(";");
+				email = account[1];
+				pass = account[2];
+				if(email.equals(emailID) && pass.equals(password)){
+					found = true; 
+					
+					profile = new MySocialProfile(account[0], account[1], account[2], account[3]);
+
+					//load in timeline posts
+					temp=null;
+					while((temp= reader.readLine()) != ";"){
+						account = temp.split(",");
+					}
+					for (int i=0; i<account.length-1; i++){
+						profile.postTimeline(account[i]);
+					}
+
+					//load in friends
+					temp=null;
+					while((temp = reader.readLine()) != ";"){
+						account = temp.split(",");
+					}
+					for (int i=0; i<account.length-1; i++){
+						profile.addFriend(account[i]);
+					}
+
+					// Load the events for this user
+					temp=null;
+					while((temp = reader.readLine()) !=";"){
+						account = temp.split(",");
+					}
+					for (int i = 0; i < account.length-1; i++) {
+						Event event = new Event(account[i], account[i + 1]);
+						profile.addEvent(event);
+					}
+					break;
 				}
-				break;
 			}
-		}
-		if (found == true){
-			System.out.println("Welcome!");
-			// Pass the profile object to the Main class to use
-			Main.profile = profile;
-		}else{
-			System.out.println("Invalid username or password. Try again.");
-			new UserAccount();
-		}
-		System.out.println("Press any key to continue...");
-		String proc = s.nextLine();
-	}catch(Exception ex){ 
-		System.out.print(ex.getMessage());
+			if (found == true){
+				System.out.println("Welcome!");
+			}else{
+				System.out.println("Invalid email or password.");
+			}
+			
+		}catch(Exception ex){ 
+			System.out.println("\nInvalid email or password.");
+			
 		}
 	}
 
@@ -571,20 +749,22 @@ class UserAccount{
 	public void createaccount(){ 
 		try{
 			s = new Scanner(System.in);
-			// Path path = Paths.get("mysocialprofile.txt");
 			OutputStream output = new BufferedOutputStream(Files.newOutputStream(path, APPEND));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
 			System.out.println("\n**Create A New Account**\n");
+
 			System.out.print("Enter your full name: ");
 			String name = s.nextLine();
 			System.out.print("Enter password: ");
 			String password = s.nextLine();
-			System.out.println("Enter your class year: ");
+			System.out.print("Enter your class year: ");
 			String classyear = s.nextLine();
-			System.out.println("Enter your email: ");
+			System.out.print("Enter your email: ");
 			String email = s.nextLine(); 
+			System.out.println();
 
-			writer.write(name + "," + password + "," + classyear + "," + email);
+			profile = new MySocialProfile(name, email, password, classyear);
+			writer.write(name + ";" + email + ";" + password + ";" + classyear + ";" + profile.getEvents() + ";" + profile.getTimeline() + ";" + profile.getFriends());
 			writer.newLine();
 			System.out.println("Account has been successfully created!");
 			writer.close();
@@ -596,108 +776,128 @@ class UserAccount{
 		}
 	} 
 
-	// public static void main(String[]args){
-	// 	new UserAccount();
-	// }
+
+	/**
+	 * Stores MySocialProfile info. to text file 
+	 * @author Annika Hoag
+	 * @since 12/17/2022
+	 */ 
+	public void logOut(){
+		try{
+			OutputStream output = new BufferedOutputStream(Files.newOutputStream(path, APPEND));
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+			writer.write(profile.getName() + ";" + profile.getEmail() + ";" + profile.getPassword() + ";" + profile.getYear() + ";" + profile.getEvents() + ";" + 
+				profile.getTimeline() + ";" + profile.getFriends());
+			writer.close();
+			output.close();
+
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
 
 
 }//closes UserAccount()
 
 
-	/**
- 	 * Creates a method using a try/catch feature to create a username and password for your account. 
- 	 * Both your username and password will save to the mysocialprofile.txt file
- 	 * @author Michael Volpi 
- 	 * @since 12/14/2022
- 	 */ 
-	class Main{
-		
-		public static void main(String[]args){
-	    //Event event = new Event(name, date);
-	    UserAccount user = new UserAccount();
-	    MySocialProfile profile = new MySocialProfile(); // initialize profile
-	    Scanner scn = new Scanner(System.in);
 
-	    boolean run1=true;
-	    boolean run2 = true;
-	    int mainMenuChoice;
-	    String friendEmail;
+/**
+ * Class that contains most of the program's user interface
+ * Interacts with MySocialProfile to import user input and create a MySocialProfile with given info.
+ * Interacts with Event class to create Event objects based off of user inputted name and date/time
+ * Interacts with User class by telling it when to read info. from txt file and when to write new info. to the txt. file
+ * @author Matthew Volpi, Michael Volpi, and Annika Hoag 
+ * @since 12/17/22
+ */
+class Main{
+	
+	public static void main(String[]args){
+		UserAccount user = new UserAccount();
+		MySocialProfile profile = new MySocialProfile();
+		Scanner scn = new Scanner(System.in);
 
-	    // System.out.println("Before while loop");
+		boolean run1=true; //decides whether or not to show Main Menu
+		boolean run2=true; //decides whether or not to show Home Screen
+		int mainMenuChoice;
+		String friendEmail;
 
-	    while(run1){
+		while(run1){
 
-	        //starts by calling Main Menu method 
-	        mainMenuChoice = user.mainMenu();
+			//starts by calling Main Menu method 
+			mainMenuChoice = user.mainMenu();
 
-	        // System.out.println(mainMenuChoice + " = mainMenuChoice");
+			//create account
+			if (mainMenuChoice == 1){
+				run2=true;
+				user.createaccount();
+			
+			//login to existing account
+			}else if (mainMenuChoice == 2){
+				run2=true;
+				user.login();
 
-	        //create account
-	        if (mainMenuChoice == 1){
-	            run2=true;
-	            user.createaccount();
-	            // profile = user.getProfile(); // store profile in MySocialProfile object
-	        
-	        //login to existing account
-	        }else if (mainMenuChoice == 2){
-	            run2=true;
-	            user.login();
-	            // profile = user.getProfile(); // store profile in MySocialProfile object
-
-	        //exit program
-	        }else if (mainMenuChoice == 3){
-	            run2=false;
-	            run1=false;
-	        
-	        }else{
-	            System.out.println("Invalid option, please try again.");
-	            run2=false;
-	            run1=true;
-	        }
+			//exit program
+			}else if (mainMenuChoice == 3){
+				run2=false;
+				run1=false;
+			
+			//default
+			}else{
+				System.out.println("Invalid option, please try again.");
+				run2=false;
+				run1=true;
+			}
 
 
-	        //homescreen
-	        while(run2){
-	            System.out.println();
-	            System.out.println("\n*next event to take place");
-	            profile.printTimeline();
-	            System.out.println("*list of all events ");
+			//homescreen
+			while(run2){
+				System.out.println();
+				System.out.println("-------------------------------");
+				
+				//display next event, most recent timeline posts, and all events
+				System.out.println("\nNext Event: ");
+				profile.displayNextEvent();
+				System.out.println("\n3 Most Recent Timeline Posts: ");
+				profile.printTimeline();
+				System.out.println("\nEvents: ");
+				profile.displayEvents();
+				System.out.println();
 
-	            System.out.println("\nPlease choose an option.");
-	            System.out.println("1. Post to timeline " +
-	                "\n2. Add an event." +
-	                "\n3. View your list of friends " +
-	                "\n4. Add/remove a friend. " +
-	                "\n5. Logout. ");
-	            int choose = scn.nextInt();
+				//give user options for what to do next
+				System.out.println("\nPlease choose an option.");
+				System.out.println("1. Post to timeline " +
+					"\n2. Add an event." +
+					"\n3. View your list of friends " +
+					"\n4. Add/remove a friend. " +
+					"\n5. Logout. ");
+				int choose = scn.nextInt();
 
+				//determine what actions to take based on user input
+				switch(choose){
+					//post to timeline
+					case 1:
+						scn = new Scanner(System.in);
+						System.out.println("Please type your new timeline post: ");
+						String post = scn.nextLine();
+						profile.postTimeline(post);
+						run2 = true;
+						break;
 
-	            switch(choose){
-	                //post to timeline
-	                case 1:
-	                    scn = new Scanner(System.in);
-	                    System.out.println("Please type your new timeline post: ");
-	                    String post = scn.nextLine();
-	                    profile.postTimeline(post);
-	                    run2 = true;
-	                    break;
-
-	                //add an event
-	                case 2:
-	                    //prompt the user for the event details 
-	                    scn = new Scanner(System.in);
-	                    System.out.print("Enter the name of the event: ");
-	                    String eventName = scn.nextLine();
-						System.out.print("Enter the date of the event (YYYY-MM-DD");
+					//add an event
+					case 2:
+						//prompt the user for the event details 
+						scn = new Scanner(System.in);
+						System.out.println("\nEnter the name of the event: ");
+						String eventName = scn.nextLine();
+						System.out.println("\nEnter the date of the event (YYYY-MM-DD-HH-MM):");
 						String eventDate = scn.nextLine();
 
 						//Creates a new event object with the user-provided details 
 						Event newEvent = new Event(eventName, eventDate);
 
-						//Add the new event to the event queue
-						events.addEvent(newEvent);
+						//addEvent to priority queue
+						profile.addEvent(newEvent);					
 
-						System.out.println("Event added Successfully!");
 						run2 = true;
 						break;
 
@@ -722,11 +922,13 @@ class UserAccount{
 
 					//logout
 					case 5:
+						user.logOut();
 						run2 = false;
 						run1 = true;
 						break;
 
 					default:
+						System.out.println("Invalid option, please try again.");
 						run2 = true;
 						break;
 
@@ -740,5 +942,3 @@ class UserAccount{
 	}
 
 }
-
-  
